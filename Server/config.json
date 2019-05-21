@@ -1,0 +1,10 @@
+{
+    "port":8080,
+    "dbname":"movies.db",
+    "staticFiles":[
+        {
+            "originalPath":"./",
+            "destinationPath":"./"
+        }
+    ]
+}
