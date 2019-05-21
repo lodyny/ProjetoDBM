@@ -1,0 +1,19 @@
+{
+    "title": "Director",
+    "description": "Movie director description",
+    "type":"object",
+    "properties": {
+        "name":{
+            "description": "director name",
+            "type":"string",
+			"regex":"[a-zA-Z]+"
+        },
+		"birthyear":{
+            "description": "director birthyear",
+            "type":"integer",
+			"regex":"\d{4}"
+        }
+    },
+    "required": ["name","birthyear"],
+    "references": []
+}

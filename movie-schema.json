@@ -1,0 +1,19 @@
+{
+    "title": "Movie",
+    "description": "Movie description",
+    "type":"object",
+    "properties": {
+        "name":{
+            "description": "movie name",
+            "type":"string",
+			"regex":"[a-zA-Z]+"
+        },
+        "year":{
+            "description": "movie release date",
+            "type":"integer",
+			"regex":"\d{4}"
+        }
+    },
+    "required": ["name","year"],
+    "references": []
+}

@@ -1,0 +1,14 @@
+{
+    "title": "Category",
+    "description": "Movie category",
+    "type":"object",
+    "properties": {
+        "name":{
+            "description": "movie category",
+            "type":"string",
+			"regex":"[a-zA-Z]+"
+        }
+    },
+    "required": ["name"],
+    "references": []
+}

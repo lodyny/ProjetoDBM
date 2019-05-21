@@ -1,0 +1,19 @@
+{
+    "title": "Actor",
+    "description": "Actor description",
+    "type":"object",
+    "properties": {
+        "name":{
+            "description": "actor name",
+            "type":"string",
+			"regex":"[a-zA-Z]+"
+        },
+		"birthyear":{
+            "description": "actor birthyear",
+            "type":"integer",
+			"regex":"\d{4}"
+        }
+    },
+    "required": ["name","birthyear"],
+    "references": []
+}
