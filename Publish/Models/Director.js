@@ -38,7 +38,7 @@ Director.prototype.save = function (callback) {
         database.run("INSERT INTO Director(name,birthyear ) VALUES(?,?)" ,
          [this.name,this.birthyear
             
-         ]);      
+         ], callback);     
     }
 }
 

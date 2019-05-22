@@ -16,15 +16,12 @@ function mapping(object, type) {
 
 {{#models}}
 router.post("/{{{name}}}", function(req, res) {
-    console.log(req.body);
     var obj = mapping(req.body, {{{name}}});
     obj.save(function(err) {
-        console.log(err);
         res.status(200).json({
             success: !err
         });
     });
-    res.send("ok");
 });
 
 router.put("/{{{name}}}/:id", function(req, res) {
@@ -52,7 +49,6 @@ router.get("/{{{name}}}/:id", function(req, res) {
 
 
 router.delete("/{{{name}}}/:id", function(req, res) {
-    console.log("chegou delete " + req.params.id);
     {{{name}}}.delete(req.params.id, function(err) {
         res.status(200).json({
             success: !err

@@ -34,7 +34,6 @@ function createTable(schema) {
       primary_key: schema.title.toLowerCase() + "_id",
       collumns_body: str_collumns_boy
     };
-    console.log(mustache.render(query_template, config));
     db.run(mustache.render(query_template, config));
   }
   

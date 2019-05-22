@@ -25,7 +25,6 @@ Category.delete = function (id, callback) {
 }
 
 Category.prototype.save = function (callback) {
-    console.log("running on " + this.id);
     if(this.id) {//UPDATE
         database.run("UPDATE Category SET name = ? WHERE category_id = ?", 
         [this.name
@@ -38,7 +37,7 @@ Category.prototype.save = function (callback) {
         database.run("INSERT INTO Category(name ) VALUES(?)" ,
          [this.name
             
-         ], callback);      
+         ], callback);     
     }
 }
 

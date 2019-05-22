@@ -47,7 +47,7 @@ function readConfigs() {
     return true;
 }
 
-function generate( /*req, res*/ ) {
+function generate() {
     if (!readConfigs())
         return;
 
@@ -59,12 +59,16 @@ function generate( /*req, res*/ ) {
     apiGenerator.generateAPI(schemas);
     var deployedServer = serverGenerator.generateServer(port);
     runDeployedServer(deployedServer);
-    //res.send("Server deployment successful.");
 };
 
 function runDeployedServer(deployedServer) {
     childProcess.fork(deployedServer);
 }
+
+app.post("/generate", function (req, res) {
+    generate();
+    res.send("Server deployment successful.");
+});
 
 var server = app.listen(8000, function () {
     var host = server.address().address === "::" ? "localhost" : server.address().address;
@@ -87,4 +91,4 @@ function moveStaticFiles() {
 //generate();
 
 // Rodar apenas o published
-runDeployedServer("./Publish/index.js");
+//runDeployedServer("./Publish/index.js");

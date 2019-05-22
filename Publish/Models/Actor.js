@@ -38,7 +38,7 @@ Actor.prototype.save = function (callback) {
         database.run("INSERT INTO Actor(name,birthyear ) VALUES(?,?)" ,
          [this.name,this.birthyear
             
-         ]);      
+         ], callback);     
     }
 }
 

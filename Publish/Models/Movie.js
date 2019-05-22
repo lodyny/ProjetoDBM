@@ -38,7 +38,7 @@ Movie.prototype.save = function (callback) {
         database.run("INSERT INTO Movie(name,year ) VALUES(?,?)" ,
          [this.name,this.year
             
-         ]);      
+         ], callback);     
     }
 }
 

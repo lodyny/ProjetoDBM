@@ -5,6 +5,10 @@ var Movie = require('../Models/Movie.js');
 var Category = require('../Models/Category.js');
 var Director = require('../Models/Director.js');
 var Actor = require('../Models/Actor.js');
+var Movie = require('../Models/Movie.js');
+var Category = require('../Models/Category.js');
+var Director = require('../Models/Director.js');
+var Actor = require('../Models/Actor.js');
 
 function mapping(object, type) {
     var obj = new type();
@@ -16,15 +20,12 @@ function mapping(object, type) {
 }
 
 router.post("/Movie", function(req, res) {
-    console.log(req.body);
     var obj = mapping(req.body, Movie);
     obj.save(function(err) {
-        console.log(err);
         res.status(200).json({
             success: !err
         });
     });
-    res.send("ok");
 });
 
 router.put("/Movie/:id", function(req, res) {
@@ -38,7 +39,7 @@ router.put("/Movie/:id", function(req, res) {
 });
 
 router.get("/Movie", function(req, res) {
-    
+
     Movie.all(function(rows) {
         res.json(rows);
     });
@@ -52,7 +53,6 @@ router.get("/Movie/:id", function(req, res) {
 
 
 router.delete("/Movie/:id", function(req, res) {
-    console.log("chegou delete " + req.params.id);
     Movie.delete(req.params.id, function(err) {
         res.status(200).json({
             success: !err
@@ -63,7 +63,7 @@ router.post("/Category", function(req, res) {
     var obj = mapping(req.body, Category);
     obj.save(function(err) {
         res.status(200).json({
-            success: err
+            success: !err
         });
     });
 });
@@ -72,9 +72,8 @@ router.put("/Category/:id", function(req, res) {
     var obj = mapping(req.body, Category);
     obj.id = req.params.id;
     obj.save(function(err) {
-        console.log(err);
         res.status(200).json({
-            success: err
+            success: !err
         });
     });
 });
@@ -94,7 +93,6 @@ router.get("/Category/:id", function(req, res) {
 
 
 router.delete("/Category/:id", function(req, res) {
-    console.log("chegou delete " + req.params.id);
     Category.delete(req.params.id, function(err) {
         res.status(200).json({
             success: !err
@@ -102,15 +100,12 @@ router.delete("/Category/:id", function(req, res) {
     });
 });
 router.post("/Director", function(req, res) {
-    console.log(req.body);
     var obj = mapping(req.body, Director);
     obj.save(function(err) {
-        console.log(err);
         res.status(200).json({
             success: !err
         });
     });
-    res.send("ok");
 });
 
 router.put("/Director/:id", function(req, res) {
@@ -138,7 +133,6 @@ router.get("/Director/:id", function(req, res) {
 
 
 router.delete("/Director/:id", function(req, res) {
-    console.log("chegou delete " + req.params.id);
     Director.delete(req.params.id, function(err) {
         res.status(200).json({
             success: !err
@@ -146,15 +140,12 @@ router.delete("/Director/:id", function(req, res) {
     });
 });
 router.post("/Actor", function(req, res) {
-    console.log(req.body);
     var obj = mapping(req.body, Actor);
     obj.save(function(err) {
-        console.log(err);
         res.status(200).json({
             success: !err
         });
     });
-    res.send("ok");
 });
 
 router.put("/Actor/:id", function(req, res) {
@@ -182,7 +173,166 @@ router.get("/Actor/:id", function(req, res) {
 
 
 router.delete("/Actor/:id", function(req, res) {
-    console.log("chegou delete " + req.params.id);
+    Actor.delete(req.params.id, function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+router.post("/Movie", function(req, res) {
+    var obj = mapping(req.body, Movie);
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.put("/Movie/:id", function(req, res) {
+    var obj = mapping(req.body, Movie);
+    obj.id = req.params.id;
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.get("/Movie", function(req, res) {
+
+    Movie.all(function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/Movie/:id", function(req, res) {
+    Movie.get(req.params.id, function(row) {
+        res.json(row);
+    });
+});
+
+
+router.delete("/Movie/:id", function(req, res) {
+    Movie.delete(req.params.id, function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+router.post("/Category", function(req, res) {
+    var obj = mapping(req.body, Category);
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.put("/Category/:id", function(req, res) {
+    var obj = mapping(req.body, Category);
+    obj.id = req.params.id;
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.get("/Category", function(req, res) {
+
+    Category.all(function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/Category/:id", function(req, res) {
+    Category.get(req.params.id, function(row) {
+        res.json(row);
+    });
+});
+
+
+router.delete("/Category/:id", function(req, res) {
+    Category.delete(req.params.id, function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+router.post("/Director", function(req, res) {
+    var obj = mapping(req.body, Director);
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.put("/Director/:id", function(req, res) {
+    var obj = mapping(req.body, Director);
+    obj.id = req.params.id;
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.get("/Director", function(req, res) {
+
+    Director.all(function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/Director/:id", function(req, res) {
+    Director.get(req.params.id, function(row) {
+        res.json(row);
+    });
+});
+
+
+router.delete("/Director/:id", function(req, res) {
+    Director.delete(req.params.id, function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+router.post("/Actor", function(req, res) {
+    var obj = mapping(req.body, Actor);
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.put("/Actor/:id", function(req, res) {
+    var obj = mapping(req.body, Actor);
+    obj.id = req.params.id;
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.get("/Actor", function(req, res) {
+
+    Actor.all(function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/Actor/:id", function(req, res) {
+    Actor.get(req.params.id, function(row) {
+        res.json(row);
+    });
+});
+
+
+router.delete("/Actor/:id", function(req, res) {
     Actor.delete(req.params.id, function(err) {
         res.status(200).json({
             success: !err
