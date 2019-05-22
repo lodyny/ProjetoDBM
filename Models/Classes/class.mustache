@@ -1,0 +1,55 @@
+const dbpath = "./Publish/Database/{{{db_name}}}";
+var database = require('../Database/sqlitedbm.js')(dbpath);
+
+class {{classTitle}} {
+    constructor ({{classProperties}}) {
+        Object.defineProperty(this,'{{primaryKey.name}}',{ 
+                enumerable:true,
+                writable:true,        
+            });
+        {{{classConstructor}}}
+    }
+}
+ 
+{{classTitle}}.all = function (callback) {
+    database.where("SELECT * FROM {{{classTitle}}}", [], {{{classTitle}}}, callback);
+}       
+
+{{classTitle}}.get = function (id, callback) {
+    database.get("SELECT * FROM {{{classTitle}}} WHERE {{{primaryKey.columnName}}} = ? ",[id] ,{{{classTitle}}}, callback);
+}
+
+{{classTitle}}.delete = function (id, callback) {
+    database.get("DELETE FROM {{{classTitle}}} WHERE {{{primaryKey.columnName}}} = ? ",[id] ,{{{classTitle}}}, callback);
+}
+
+{{classTitle}}.prototype.save = function (callback) {
+    if(this.{{primaryKey.name}}) {//UPDATE
+        database.run("UPDATE {{{classTitle}}} SET {{{propertiesSetValues}}}{{#classReferences}}{{^isMM}},{{{model}}}_id = ?{{/isMM}}{{/classReferences}} WHERE {{{primaryKey.columnName}}} = ?", 
+        [{{{propertiesJoinThis}}}
+            {{#classReferences}}{{^isMM}},this.{{{model}}}_id{{/isMM}}{{/classReferences}}
+            ,this.{{primaryKey.name}}
+        ]       
+        , callback);
+    
+    } else {//INSERT      
+        database.run("INSERT INTO {{{classTitle}}}({{{propertiesJoin}}} {{#classReferences}}{{^isMM}},{{{model}}}_id{{/isMM}}{{/classReferences}}) VALUES({{{propertiesValuesParams}}}{{#classReferences}}{{^isMM}}, ?{{/isMM}}{{/classReferences}})" ,
+         [{{{propertiesJoinThis}}}
+            {{#classReferences}}
+            {{^isMM}}
+                ,this.{{{model}}}_id
+            {{/isMM}}
+            {{/classReferences}}   
+            
+         ], callback);     
+    }
+}
+
+{{classTitle}}.mappingDBtoObject = {
+    {{{mappingDBtoObject}}}
+    {{#classReferences}}
+        , {{{model}}}_id : '{{{model}}}_id'
+    {{/classReferences}}
+}
+
+module.exports = {{{classTitle}}};

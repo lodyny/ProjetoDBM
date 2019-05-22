@@ -7,7 +7,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/api', api);
 
-var server = app.listen({{port}},function () {
+var server = app.listen(8080,function () {
 var host = server.address().address === "::" ? "localhost" :
 server.address().address
  var port = server.address().port

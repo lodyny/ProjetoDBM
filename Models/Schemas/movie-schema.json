@@ -11,7 +11,7 @@
         "year":{
             "description": "movie release date",
             "type":"integer",
-			"regex":"\d{4}"
+			"regex":"\\d{4}"
         }
     },
     "required": ["name","year"],

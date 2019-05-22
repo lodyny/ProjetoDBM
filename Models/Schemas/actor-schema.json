@@ -11,7 +11,7 @@
 		"birthyear":{
             "description": "actor birthyear",
             "type":"integer",
-			"regex":"\d{4}"
+			"regex":"\\d{4}"
         }
     },
     "required": ["name","birthyear"],

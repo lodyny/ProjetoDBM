@@ -1,0 +1,64 @@
+var express = require('express');
+var router = express.Router();
+
+{{#models}}
+var {{{name}}} = require('../Models/{{{name}}}.js');
+{{/models}}
+
+function mapping(object, type) {
+    var obj = new type();
+    Object.getOwnPropertyNames(object).forEach(function (value) {
+    if (obj.hasOwnProperty(value)) //Se o objeto possuir o atributo que se está a verificar então recebe o valor retornado da query da base de dados
+        obj[value] = object[value];
+    });
+    return obj;
+}
+
+{{#models}}
+router.post("/{{{name}}}", function(req, res) {
+    console.log(req.body);
+    var obj = mapping(req.body, {{{name}}});
+    obj.save(function(err) {
+        console.log(err);
+        res.status(200).json({
+            success: !err
+        });
+    });
+    res.send("ok");
+});
+
+router.put("/{{{name}}}/:id", function(req, res) {
+    var obj = mapping(req.body, {{{name}}});
+    obj.id = req.params.id;
+    obj.save(function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+
+router.get("/{{{name}}}", function(req, res) {
+
+    {{{name}}}.all(function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/{{{name}}}/:id", function(req, res) {
+    {{{name}}}.get(req.params.id, function(row) {
+        res.json(row);
+    });
+});
+
+
+router.delete("/{{{name}}}/:id", function(req, res) {
+    console.log("chegou delete " + req.params.id);
+    {{{name}}}.delete(req.params.id, function(err) {
+        res.status(200).json({
+            success: !err
+        });
+    });
+});
+{{/models}}
+
+module.exports = router;

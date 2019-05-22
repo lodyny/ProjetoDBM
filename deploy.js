@@ -2,8 +2,9 @@ var mkdirp = require('mkdirp');
 var del = require('del');
 
 function generateFolders(){
-    del.sync(['./Publish']);
+    del.sync('./Publish');
     mkdirp.sync('./Publish/Controllers');
+    mkdirp.sync('./Publish/Database');
     mkdirp.sync('./Publish/Models');
     mkdirp.sync('./Publish/Views');
     mkdirp.sync('./Publish/Public');
@@ -12,4 +13,8 @@ function generateFolders(){
     mkdirp.sync('./Publish/Public/Images');
 }
 
-module.exports = {generateFolders}
+function createPath(path){
+    mkdirp.sync(path.slice(0, -1));
+}
+
+module.exports = {generateFolders, createPath}
