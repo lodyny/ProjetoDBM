@@ -35,6 +35,7 @@ function readConfigs() {
         return false;
 
     dbname = config.dbname;
+    schemas = [];
     config.schemas.forEach(model => {
         schemas.push(JSON.parse(fs.readFileSync(model.path)));
     });
@@ -75,9 +76,6 @@ var server = app.listen(8000, function () {
     var port = server.address().port;
     console.log("Server running at http://%s:%s", host, port);
 });
-
-var fs = require('fs');
-var mustache = require('mustache');
 
 function moveStaticFiles() {
     staticFiles.forEach(file => {
