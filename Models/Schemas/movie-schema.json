@@ -15,5 +15,12 @@
         }
     },
     "required": ["name","year"],
-    "references": []
+    "references": [{
+        "model": "Category",
+        "relation": "1-M"
+    }
+    ,{
+        "model": "Director",
+        "relation": "1-M"
+    }]
 }

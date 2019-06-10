@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS {{{child_table}}}_{{{parent_table}}}(
+    {{{child_collumn}}}_id INTEGER NOT NULL,
+    {{{parent_collumn}}}_id INTEGER NOT NULL,
+    PRIMARY KEY ({{{child_collumn}}}_id , {{{parent_collumn}}}_id),
+    FOREIGN KEY ({{{child_collumn}}}_id) REFERENCES {{{child_table}}}({{{child_collumn}}}_id),
+    FOREIGN KEY ({{{parent_collumn}}}_id) REFERENCES {{{parent_table}}}({{{parent_collumn}}}_id)
+)
+
+
+

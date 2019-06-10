@@ -10,6 +10,12 @@ class Movie {
         this.name=name;
 		this.year=year;
 		
+		Object.defineProperty(this, "category_id",{
+			 enumerable: false, writable: true 
+		 });
+		Object.defineProperty(this, "director_id",{
+			 enumerable: false, writable: true 
+		 });
     }
 }
  
@@ -27,16 +33,18 @@ Movie.delete = function (id, callback) {
 
 Movie.prototype.save = function (callback) {
     if(this.id) {//UPDATE
-        database.run("UPDATE Movie SET name = ?,year = ? WHERE movie_id = ?", 
+        database.run("UPDATE Movie SET name = ?,year = ?,category_id = ?,director_id = ? WHERE movie_id = ?", 
         [this.name,this.year
-            
+            ,this.category_id,this.director_id
             ,this.id
         ]       
         , callback);
     
     } else {//INSERT      
-        database.run("INSERT INTO Movie(name,year ) VALUES(?,?)" ,
+        database.run("INSERT INTO Movie(name,year ,category_id,director_id) VALUES(?,?, ?, ?)" ,
          [this.name,this.year
+                ,this.category_id
+                ,this.director_id
             
          ], callback);     
     }
@@ -44,6 +52,8 @@ Movie.prototype.save = function (callback) {
 
 Movie.mappingDBtoObject = {
     name:'name',year:'year',movie_id:'id'
+        , category_id : 'category_id'
+        , director_id : 'director_id'
 }
 
 module.exports = Movie;

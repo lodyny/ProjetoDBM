@@ -15,5 +15,8 @@
         }
     },
     "required": ["name","birthyear"],
-    "references": []
+    "references": [{
+        "model": "Movie",
+        "relation": "M-M"
+    }]
 }

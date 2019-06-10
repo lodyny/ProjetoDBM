@@ -10,6 +10,9 @@ class Actor {
         this.name=name;
 		this.birthyear=birthyear;
 		
+		Object.defineProperty(this, "movie_ids",{
+			 enumerable: false, writable: true 
+		, value:[] });
     }
 }
  
@@ -44,6 +47,7 @@ Actor.prototype.save = function (callback) {
 
 Actor.mappingDBtoObject = {
     name:'name',birthyear:'birthyear',actor_id:'id'
+        , movie_id : 'movie_id'
 }
 
 module.exports = Actor;
