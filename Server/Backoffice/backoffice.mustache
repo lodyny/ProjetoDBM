@@ -1,0 +1,19 @@
+var express = require('express');
+var router = express.Router();
+var mustache = require("mustache");
+var fs = require("fs");
+
+{{#models}}
+var {{{name}}} = require('../Models/{{{name}}}.js');
+{{/models}}
+
+{{#models}}
+router.get("/{{{name}}}", function(req, res) {
+    {{{name}}}.all(function(rows) {
+        res.json(rows);
+    });
+});
+
+{{/models}}
+
+module.exports = router;

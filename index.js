@@ -10,6 +10,7 @@ var classGenerator = require('./Models/Classes/class-generator');
 var dbGenerator = require('./Models/Database/database-generator');
 var serverGenerator = require('./Server/server-generator');
 var apiGenerator = require('./Server/API/api-generator');
+var backofficeGenerator = require('./Server/Backoffice/backoffice-generator');
 // End Generators
 
 // Variables
@@ -58,6 +59,7 @@ function generate() {
     classGenerator.generateClasses(schemas, dbname);
     dbGenerator.generateDatabase(schemas, dbname);
     apiGenerator.generateAPI(schemas);
+    backofficeGenerator.generateBackoffice(schemas);
     var deployedServer = serverGenerator.generateServer(port);
     runDeployedServer(deployedServer);
 };
