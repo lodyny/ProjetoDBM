@@ -47,7 +47,6 @@ router.get("/Movie/:id", function(req, res) {
     });
 });
 
-
 router.delete("/Movie/:id", function(req, res) {
     Movie.delete(req.params.id, function(err) {
         res.status(200).json({
@@ -86,7 +85,6 @@ router.get("/Category/:id", function(req, res) {
         res.json(row);
     });
 });
-
 
 router.delete("/Category/:id", function(req, res) {
     Category.delete(req.params.id, function(err) {
@@ -127,7 +125,6 @@ router.get("/Director/:id", function(req, res) {
     });
 });
 
-
 router.delete("/Director/:id", function(req, res) {
     Director.delete(req.params.id, function(err) {
         res.status(200).json({
@@ -166,7 +163,6 @@ router.get("/Actor/:id", function(req, res) {
         res.json(row);
     });
 });
-
 
 router.delete("/Actor/:id", function(req, res) {
     Actor.delete(req.params.id, function(err) {

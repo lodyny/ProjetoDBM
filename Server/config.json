@@ -23,6 +23,14 @@
         "originalPath": "./Server/StaticFiles/",
         "destinationPath": "./Publish/Views/"
     }, {
+        "fileName": "details.mustache",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Views/"
+    }, {
+        "fileName": "form.mustache",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Views/"
+    }, {
         "fileName": "delete.png",
         "originalPath": "./Server/StaticFiles/",
         "destinationPath": "./Publish/Public/Images/"

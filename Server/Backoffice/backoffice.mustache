@@ -56,6 +56,64 @@ router.get("/{{{name}}}", function(req, res) {
     });
 });
 
+router.get("/{{{name}}}/Details/:id", function(req, res) {
+    console.log("Getting Details for {{{name}}} object with id " + (req.params.id));
+    {{{name}}}.get(req.params.id, function(data) {
+        if (data){
+            res.render('details', {
+                title: 'Details',
+                properties: function (){
+                    return Object.keys(data).map(key => {
+                        var proprow = {};
+
+                        proprow.name = key;
+                        proprow.value = data[key];
+                        
+                        return proprow;
+                    })
+                }
+            })
+        }
+    })
+});
+
+router.get("/{{{name}}}/Edit/:id", function(req, res) {
+    console.log("Getting Edit for {{{name}}} object with id " + (req.params.id));
+    {{{name}}}.get(req.params.id, function(data) {
+        if (data){
+            res.render('form', {
+                title: 'Details',
+                properties: function (){
+                    return Object.keys(data).map(key => {
+                        var proprow = {};
+
+                        proprow.name = key;
+                        proprow.value = data[key];
+                        
+                        return proprow;
+                    })
+                }
+            })
+        }
+    })
+});
+
+router.get("/{{{name}}}/Insert", function(req, res) {
+    console.log("Getting Insert for {{{name}}} object");
+            res.render('form', {
+                title: 'Details',
+                properties: function (){
+                    return Object.keys(new {{{name}}}()).map(key => {
+                        var proprow = {};
+
+                        proprow.name = key;
+                        
+                        return proprow;
+                    })
+                }
+            })
+});
+
 {{/models}}
 
 module.exports = router;

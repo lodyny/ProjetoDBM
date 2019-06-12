@@ -47,7 +47,6 @@ router.get("/{{{name}}}/:id", function(req, res) {
     });
 });
 
-
 router.delete("/{{{name}}}/:id", function(req, res) {
     {{{name}}}.delete(req.params.id, function(err) {
         res.status(200).json({
