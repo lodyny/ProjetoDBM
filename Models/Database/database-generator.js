@@ -5,7 +5,7 @@ var mustache = require("mustache");
 var db;
 var mmrelations = [];
 
-function generateDatabase(schemas, db_name) {
+function generateDatabase(schemas, db_name, dummyData) {
   db = new sqlite3.Database("./Publish/Database/" + db_name);
 
   schemas.forEach(schema => {
@@ -17,6 +17,11 @@ function generateDatabase(schemas, db_name) {
       generateRelationships(schema);
     });
   }, 2500);
+
+  setTimeout(function () {
+    if(dummyData)
+      createDummyData();
+  }, 3000);
 
   setTimeout(function () {
     db.close();
@@ -146,6 +151,13 @@ function generateRelationships(schema) {
       }
     });
   }
+}
+
+function createDummyData(){
+  console.log("Generating dummy data...");
+  db.exec("INSERT INTO Category (name) VALUES ('Horror'),('Comedy'),('Action'),('Drama'),('Fantasy')");
+  db.exec("INSERT INTO Director (name, birthyear) VALUES ('Agustini', 1980),('Pirinpini', 1990),('Secolini', 2000)");
+  db.exec("INSERT INTO Movie (name, year, category_id, director_id) VALUES ('Titanic', 1994, 1, 1),('The lord of the Rings', 2000, 2, 2),('The Matrix', 1900, 3, 3),('The Godfather', 2002, 4, 1),('Star Wars: Episode IV', 1994, 5, 2)");
 }
 
 module.exports.generateDatabase = generateDatabase;

@@ -57,7 +57,7 @@ function generate() {
     moveStaticFiles();
 
     classGenerator.generateClasses(schemas, dbname);
-    dbGenerator.generateDatabase(schemas, dbname);
+    dbGenerator.generateDatabase(schemas, dbname, true);
     apiGenerator.generateAPI(schemas);
     backofficeGenerator.generateBackoffice(schemas);
     var deployedServer = serverGenerator.generateServer(port);

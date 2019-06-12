@@ -13,9 +13,19 @@
  <tr>
  {{#properties}}
  <td>
- {{.}}
+ {{value}}
  </td>
  {{/properties}}
+ 
+{{#actions}}
+<td>
+<a href="{{link}}" title="{{tooltip}}" {{#events}}{{name}}="javascript:{{function}}({{args}})" {{/events}}>
+    {{#image}}
+        Okey <img src="{{src}}" alt="{{alt}}" />
+    {{/image}}
+</td>
+{{/actions}}
+
  </tr>
  {{/rows}}
  </table>

@@ -18,6 +18,7 @@ app.get('/', function(req, res){
     res.send('API up and running');
 });
 
+app.use(express.static(__dirname + '/Public'));
 
 var server = app.listen(8080,function () {
 var host = server.address().address === "::" ? "localhost" :

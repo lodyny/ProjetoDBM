@@ -9,8 +9,50 @@ var {{{name}}} = require('../Models/{{{name}}}.js');
 
 {{#models}}
 router.get("/{{{name}}}", function(req, res) {
-    {{{name}}}.all(function(rows) {
-        res.json(rows);
+    {{{name}}}.all(function (data) {
+        console.log(data);
+        res.render('list', {
+            title: '{{{name}}}',
+            columns: Object.keys(new {{{name}}}()),
+            rows: data.map(obj => {
+                return {
+                    properties: Object.keys(obj).map(key => {
+                        return {
+                            name: key,
+                            value: obj[key]
+                        }
+                    }),
+                    actions: [{
+                        label: '',
+                        link: './{{{name}}}/Details/' + obj.id,
+                        image: {
+                            src: '../images/read.png'
+                        },
+                        tooltip: 'Details'
+                    }, {
+                        label: '',
+                        link: './{{{name}}}/Edit/' + obj.id,
+                        image: {
+                            src: '../images/edit.png'
+                        },
+                        tooltip: 'Edit'
+                    }, {
+                        label: '',
+                        link: '#',
+                        image: {
+                            src: '../images/delete.png'
+                        },
+                        tooltip: 'Delete',
+                        events: [{
+                            name: "onclick",
+                            function: "delete",
+                            args: obj.id
+                        }]
+
+                    }]
+                }
+            })
+        })
     });
 });
 

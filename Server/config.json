@@ -22,6 +22,18 @@
         "fileName": "list.mustache",
         "originalPath": "./Server/StaticFiles/",
         "destinationPath": "./Publish/Views/"
+    }, {
+        "fileName": "delete.png",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Public/Images/"
+    }, {
+        "fileName": "edit.png",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Public/Images/"
+    }, {
+        "fileName": "read.png",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Public/Images/"
     }],
     "databases": [{
         "tableName": "Actor_Movie"
