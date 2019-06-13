@@ -45,6 +45,12 @@ Actor.prototype.save = function (callback) {
     }
 }
 
+Actor.many = function (model, id, callback){
+    var tableName = "Actor_" + model;
+
+    database.where('SELECT Actor.* FROM Actor INNER JOIN ${tableName} ON ${tableName}.id = Actor.id WHERE ${tableName}.${model.toLowerCase()}_id = ?', [id], Actor, callback);
+}
+
 Actor.mappingDBtoObject = {
     name:'name',birthyear:'birthyear',actor_id:'id'
         , movie_id : 'movie_id'

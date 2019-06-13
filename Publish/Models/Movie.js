@@ -50,6 +50,12 @@ Movie.prototype.save = function (callback) {
     }
 }
 
+Movie.many = function (model, id, callback){
+    var tableName = "Movie_" + model;
+
+    database.where('SELECT Movie.* FROM Movie INNER JOIN ${tableName} ON ${tableName}.id = Movie.id WHERE ${tableName}.${model.toLowerCase()}_id = ?', [id], Movie, callback);
+}
+
 Movie.mappingDBtoObject = {
     name:'name',year:'year',movie_id:'id'
         , category_id : 'category_id'

@@ -56,4 +56,18 @@ router.delete("/{{{name}}}/:id", function(req, res) {
 });
 {{/models}}
 
+{{#nmRelations}}
+router.get("/{{{modelA}}}/:model/:id", function(req, res) {
+    {{{modelA}}}.many(req.params.model, req.params.id, function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/{{{modelB}}}/:model/:id", function(req, res) {
+    {{{modelB}}}.many(req.params.model, req.params.id, function(rows) {
+        res.json(rows);
+    });
+});
+{{/nmRelations}}
+
 module.exports = router;
