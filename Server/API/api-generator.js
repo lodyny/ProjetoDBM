@@ -14,12 +14,13 @@ function generateAPI (schemas){
     var nmRelations = [];
 
     schemas.forEach(schema => {
-      console.log(schema.name);
-      console.log(schema.references);
-      if (schemas.references != null)
-        schemas.references.forEach(ref => {
-          console.log(ref);
+      let _references = schema.references;
+      if (Object.keys(_references).length > 0){
+        _references.forEach(ref => {
+          if (ref.relation == 'M-M')
+          nmRelations.push({modelA: schema.name, modelB: ref.model});
         });
+      }
     });
 
     template_config.nmRelations = nmRelations;

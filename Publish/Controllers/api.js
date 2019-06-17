@@ -172,5 +172,16 @@ router.delete("/Actor/:id", function(req, res) {
     });
 });
 
+router.get("/Actor/:model/:id", function(req, res) {
+    Actor.many(req.params.model, req.params.id, function(rows) {
+        res.json(rows);
+    });
+});
+
+router.get("/Movie/:model/:id", function(req, res) {
+    Movie.many(req.params.model, req.params.id, function(rows) {
+        res.json(rows);
+    });
+});
 
 module.exports = router;
