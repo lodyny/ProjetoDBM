@@ -103,7 +103,7 @@ function generateRelationships(schema) {
           query_template = fs.readFileSync("./Models/Database/fk_11.mustache").toString();
           db.run(mustache.render(query_template, config));
           setTimeout(function () {
-            query_template = fs.readFileSync("./Models/Database/fk_11_index.mustache").toString();
+            query_template = fs.readFileSync("./Models/Database/fk_11_secondary.mustache").toString();
             db.run(mustache.render(query_template, config));
           }, 1000);
           break;

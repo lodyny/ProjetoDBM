@@ -43,8 +43,8 @@ Category.prototype.save = function (callback) {
 
 Category.many = function (model, id, callback){
     var tableName = "Category_" + model;
-
-    database.where('SELECT Category.* FROM Category INNER JOIN ${tableName} ON ${tableName}.id = Category.id WHERE ${tableName}.${model.toLowerCase()}_id = ?', [id], Category, callback);
+    
+    database.where(`SELECT Category.* FROM Category INNER JOIN ${tableName} ON ${tableName}.id = Category.id WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], Category, callback);
 }
 
 Category.mappingDBtoObject = {

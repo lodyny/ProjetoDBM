@@ -44,8 +44,8 @@ Director.prototype.save = function (callback) {
 
 Director.many = function (model, id, callback){
     var tableName = "Director_" + model;
-
-    database.where('SELECT Director.* FROM Director INNER JOIN ${tableName} ON ${tableName}.id = Director.id WHERE ${tableName}.${model.toLowerCase()}_id = ?', [id], Director, callback);
+    
+    database.where(`SELECT Director.* FROM Director INNER JOIN ${tableName} ON ${tableName}.id = Director.id WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], Director, callback);
 }
 
 Director.mappingDBtoObject = {
