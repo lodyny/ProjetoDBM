@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./index.js --ignore Publish/*",
+    "publish": "nodemon ./Publish/index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lodyny/ProjectoDBM.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "César Nero",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lodyny/ProjectoDBM/issues"
@@ -26,6 +28,7 @@
     "mkdirp": "^0.5.1",
     "mustache": "^3.0.1",
     "mustache-express": "^1.2.8",
+    "nodemon": "^1.19.1",
     "sqlite3": "^4.0.8"
   }
 }

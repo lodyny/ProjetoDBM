@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var childProcess = require('child_process');
 var app = express();
+var nodemon = require('nodemon');
 
 // Generators 
 var deployGenerator = require('./deploy');
@@ -14,6 +15,7 @@ var backofficeGenerator = require('./Server/Backoffice/backoffice-generator');
 // End Generators
 
 // Variables
+var deployedServer;
 var schemas = [];
 var dbname = '';
 var port;
@@ -60,17 +62,41 @@ function generate() {
     dbGenerator.generateDatabase(schemas, dbname, true);
     apiGenerator.generateAPI(schemas);
     backofficeGenerator.generateBackoffice(schemas);
-    var deployedServer = serverGenerator.generateServer(port);
-    runDeployedServer(deployedServer);
+    deployedServer = serverGenerator.generateServer(port);
+    //runDeployedServer(deployedServer);
 };
 
 function runDeployedServer(deployedServer) {
-    childProcess.fork(deployedServer);
+    let _child = childProcess.fork(deployedServer);
+    _child.on('exit', function (code, signal){
+        console.log('child process exit with ' + code + ' and signal ' + signal);
+    });
+}
+
+function startPublish(){
+    nodemon({ script: './Publish/index.js' }).on('start', function(){
+        console.log('nodemon started');
+    }).on('crash', function () {
+        console.log('script crashed...');
+    });
 }
 
 app.post("/generate", function (req, res) {
     generate();
-    res.send("Server deployment successful.");
+    console.log("Server deployment started...");
+    res.redirect('/');
+});
+
+app.post("/start", function (req, res) {
+    console.log("Server Start...");
+    //runDeployedServer(deployedServer);
+    startPublish();
+    res.redirect('/');
+});
+
+app.post("/stop", function (req, res) {
+    console.log("Server Stop...");
+    res.redirect('/');
 });
 
 var server = app.listen(8000, function () {
