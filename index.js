@@ -96,6 +96,7 @@ app.post("/start", function (req, res) {
 
 app.post("/stop", function (req, res) {
     console.log("Server Stop...");
+    nodemon.emit('quit');
     res.redirect('/');
 });
 
