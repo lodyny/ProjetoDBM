@@ -3,6 +3,7 @@ var mustache = require('mustache');
 
 function generateServer(server_port) {
     var path = './Publish/index.js';
+
     fs.readFile('./Server/server.mustache', function (err, data) {
         var view = {
             port: server_port

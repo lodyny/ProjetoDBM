@@ -4,6 +4,7 @@ var fs = require('fs');
 var childProcess = require('child_process');
 var app = express();
 var nodemon = require('nodemon');
+var mustache = require('mustache');
 
 // Generators 
 var deployGenerator = require('./deploy');
@@ -30,6 +31,18 @@ app.use(express.static('Public'));
 
 app.get('/Hello', function (req, res) {
     res.send("Hello");
+});
+
+app.get('/', function (req, res) {
+    var template = fs.readFileSync("./Public/index.mustache").toString();
+
+    var template_config = {
+      title: 'Backoffice',
+      status: isServerRunning()
+    };
+  
+    var output = mustache.render(template, template_config);
+    res.send(output);
 });
 
 function readConfigs() {
@@ -73,12 +86,14 @@ function runDeployedServer(deployedServer) {
     });
 }
 
+var teste;
 function startPublish(){
-    nodemon({ script: './Publish/index.js' }).on('start', function(){
+    teste = nodemon({ script: './Publish/index.js' }).on('start', function(){
         console.log('nodemon started');
     }).on('crash', function () {
         console.log('script crashed...');
     });
+    console.log(teste);
 }
 
 app.post("/generate", function (req, res) {
@@ -100,6 +115,16 @@ app.post("/stop", function (req, res) {
     res.redirect('/');
 });
 
+app.post("/getStats", function (req, res){
+    console.log("IsRunning: " + isServerRunning());
+});
+
+function isServerRunning(){
+    if (teste == null)
+        return false;
+    return teste.config.run;
+}
+
 var server = app.listen(8000, function () {
     var host = server.address().address === "::" ? "localhost" : server.address().address;
     var port = server.address().port;
@@ -113,6 +138,8 @@ function moveStaticFiles() {
         fs.writeFileSync(file.destinationPath + file.fileName, data);
     });
 }
+
+
 
 // Forçar generate para não estar sempre a entrar na página backoffice
 //generate();
