@@ -1,9 +1,28 @@
 <html>
  <head>
  <title>{{title}}</title>
+ <script>
+ function search(input) {
+var filterText = input.value.toUpperCase();
+var table = document.getElementById("table");
+var tr = table.getElementsByTagName("tr");
+for (i = 0; i < tr.length; i++) {
+var td = tr[i].getElementsByTagName("td")[1]; //deverão alterar esta função para percorrer todos os TD que vos interessae não apenas o 1º
+if (td) {
+var txtValue = td.textContent || td.innerText;
+if (txtValue.toUpperCase().indexOf(filterText) > -1) {
+tr[i].style.display = "";
+} else {
+tr[i].style.display = "none";
+}
+}
+}
+}
+ </script>
  </head>
  <body>
- <table>
+ <input type="text" id="inputSearch" onkeyup="search(this)" placeholder="Search for..."/>
+ <table id="table">
  <tr>
  {{#columns}}
  <th>{{.}}</th>
@@ -21,7 +40,7 @@
 <td>
 <a href="{{link}}" title="{{tooltip}}" {{#events}}{{name}}="javascript:{{function}}({{args}})" {{/events}}>
     {{#image}}
-        Okey <img src="{{src}}" alt="{{alt}}" />
+        <img src="{{src}}" alt="{{alt}}" />
     {{/image}}
 </td>
 {{/actions}}

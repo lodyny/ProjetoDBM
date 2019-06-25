@@ -48,10 +48,7 @@ class {{classTitle}} {
 {{classTitle}}.many = function (model, id, callback){
     var tableName = "{{classTitle}}_" + model;
     
-    database.where(`SELECT {{classTitle}}.* FROM {{classTitle}}
-                    INNER JOIN ${tableName} ON ${tableName}.{{classTitle}}_{{primaryKey.name}} = {{classTitle}}.{{classTitle}}_{{primaryKey.name}}
-                    WHERE ${tableName}.${model.toLowerCase()}_id = ?`
-                    , [id], {{classTitle}}, callback);
+    database.where(`SELECT {{classTitle}}.* FROM {{classTitle}} INNER JOIN ${tableName} ON ${tableName}.{{classTitle}}_{{primaryKey.name}} = {{classTitle}}.{{classTitle}}_{{primaryKey.name}} WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], {{classTitle}}, callback);
 }
 
 {{classTitle}}.mappingDBtoObject = {

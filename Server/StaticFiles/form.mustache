@@ -1,12 +1,160 @@
-<html>
- <body>
- <form action="">
- {{#properties}}
- <div>
- <label>{{name}}:</label>
- <input type="text" name="{{name}}">{{value}}</input>
- </div>
- {{/properties}}
- </form>
- </body>
-</html>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>    
+function load1MValues(model, div_id, control_value){
+    console.log("1M");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", `/../../api/${model}`, true);
+    xhr.onreadystatechange = function () {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+            var control = document.createElement("select");
+            control.setAttribute("class", "form-control");
+            control.name = model.toLowerCase() + "_id";
+
+            var response = JSON.parse(this.responseText);
+            console.log(response);
+
+            var defaultOption = document.createElement("option");
+            defaultOption.textContent = `-- Select a ${model} --`;  
+            control.appendChild(defaultOption);
+
+            response.forEach(function(elem){
+                var option = document.createElement("option");
+                option.textContent = elem.name;
+                option.value = elem.id;
+                
+                control.appendChild(option);
+            })
+
+            {{#isEditForm}}
+                console.log(control_value);
+                control.value = control_value;
+            {{/isEditForm}}
+            document.getElementById(div_id).appendChild(control);
+        }
+    }
+        xhr.send();
+}
+
+function loadMMValues(model, div_id, value){
+    console.log("MM");
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", `/../../api/${model}`, true);
+    xhr.onreadystatechange = function () {
+        if(xhr.readyState === 4 && xhr.status === 200) {       
+            var response = JSON.parse(this.responseText);
+            console.log(response);
+
+            var div = document.getElementById(div_id);
+
+            response.forEach(function(elem){
+                var checkboxDiv = document.createElement("div");
+                checkboxDiv.className += "form-check";
+
+                var control = document.createElement("input");
+                control.type = "checkbox";
+                control.name = model.toLowerCase() + "_id";
+                control.value = elem.id;
+                control.className = "form-check-input";
+                control.id = "check_" + model.toLowerCase() + "_id";
+                control.style = "margin-left:15%;"    
+                
+                var label = document.createElement("label");
+                label.className = "form-check-label";
+                label.for = "check_" + model.toLowerCase() + "_id";
+                //label.appendChild(control);
+                label.appendChild(document.createTextNode(elem.name + " ("+ elem.price + "€)"));      
+
+            
+                checkboxDiv.appendChild(control);
+                checkboxDiv.appendChild(label);
+                
+                div.appendChild(checkboxDiv);
+
+            })
+        }
+    }
+        xhr.send();
+}
+
+$(document).ready(function(){
+    $('input[rel="tooltip_rel"]').tooltip();
+    {{#isEditForm}}
+        {{#references}}
+            {{#is_mm_relation}}
+                loadMMValues('{{{model}}}', 'reference_{{model}}', {{value}});
+            {{/is_mm_relation}}
+            {{^is_mm_relation}}
+                load1MValues('{{{model}}}', 'reference_{{model}}',{{value}});
+            {{/is_mm_relation}}
+        {{/references}} 
+
+    $("#form").submit(function(e) {
+        $.ajax({
+            type: "PUT",
+            url: "/../../api/{{{model}}}/{{modelID}}",
+            cache: false,
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            data: $("#form").serialize(),
+            success:function(){
+                window.location.href = "/backoffice/{{{model}}}";
+                
+            }
+        });
+        return false;
+    });
+    {{/isEditForm}}
+    {{^isEditForm}}
+    {{#references}}
+        {{#is_mm_relation}}
+            loadMMValues('{{{model}}}', 'reference_{{model}}');
+        {{/is_mm_relation}}
+        {{^is_mm_relation}}
+            load1MValues('{{{model}}}', 'reference_{{model}}');
+        {{/is_mm_relation}}
+    {{/references}} 
+    
+    $("#form").submit(function(e) {
+        $.ajax({
+            type: "POST",
+            url: "/../../api/{{{model}}}",
+            cache: false,
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            data: $("#form").serialize(),
+            success:function(){
+                window.location.href = "/backoffice/{{{model}}}";
+                
+            }
+        });
+
+        return false;
+    });
+    {{/isEditForm}}
+});
+
+</script>
+
+<div class="container form-container rounded">
+<h2 style="width:100%;text-align:center"> {{{model}}} </h1>
+   <div style="margin-left:25%">
+   <form id="form">
+            {{#properties}}
+                <div class="form-group">
+                    <label>{{labelName}}</label>
+                    <input autocomplete="off" name="{{name}}" value="{{value}}" {{{_required}}} {{{_maximum}}} {{{_minimum}}} {{{_pattern}}} class="form-control" type="{{type}}" rel="tooltip_rel"  data-toggle="tooltip" data-placement="right" title="{{{description}}}" />
+                </div>
+            {{/properties}}
+            {{#references}}
+                <div class="form-group" id="reference_{{model}}">
+                    <label>{{model}}</label>
+                </div>
+            {{/references}}
+
+            <div class="form-group">
+            <input class="form-control btn btn-success"  value="Submit" type="submit" />
+        </div>
+       </form>
+    </div>
+</div>  

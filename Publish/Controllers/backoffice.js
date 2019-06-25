@@ -10,7 +10,6 @@ var Actor = require('../Models/Actor.js');
 
 router.get("/Movie", function(req, res) {
     Movie.all(function (data) {
-        console.log(data);
         res.render('list', {
             title: 'Movie',
             columns: Object.keys(new Movie()),
@@ -57,28 +56,48 @@ router.get("/Movie", function(req, res) {
 });
 
 router.get("/Movie/Details/:id", function(req, res) {
-    console.log("Getting Details for Movie object with id " + (req.params.id));
-    Movie.get(req.params.id, function(data) {
-        if (data){
-            res.render('details', {
-                title: 'Details',
-                properties: function (){
-                    return Object.keys(data).map(key => {
-                        var proprow = {};
-
-                        proprow.name = key;
-                        proprow.value = data[key];
-                        
-                        return proprow;
-                    })
+    Movie.get(req.params.id, function (row) {
+        var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Movie".toLowerCase()
+                + "-schema.json"));
+        res.render('details', {
+            properties: function () {
+                var allProps = Object.getOwnPropertyNames(row);
+                var validProps = [];
+                allProps.forEach(function (prop) {
+                    if (model.properties.hasOwnProperty(prop)) {
+                        console.log(prop + " -> " + model.properties[prop].presentationMode);
+                        validProps.push({
+                            name: prop,
+                            mode: model.properties[prop].presentationMode,
+                            value: row[prop]
+                        });
+                    }
+                });
+                return validProps;
+            },
+            references: function () {
+                var allRefs = [];
+                if (model.references){
+                    model.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            values: ref.relation == "M-M" ? req.params.id + '/' + ref.model : row[(ref.model + "_id").toLowerCase()]
+                        });
+                    });
                 }
-            })
-        }
-    })
+                return allRefs;
+            },
+            get hasReferences() {
+                return this.references().length > 0;
+            }
+        })
+    });
 });
 
+
+
 router.get("/Movie/Edit/:id", function(req, res) {
-    console.log("Getting Edit for Movie object with id " + (req.params.id));
     Movie.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
@@ -99,7 +118,6 @@ router.get("/Movie/Edit/:id", function(req, res) {
 });
 
 router.get("/Movie/Insert", function(req, res) {
-    console.log("Getting Insert for Movie object");
             res.render('form', {
                 title: 'Details',
                 properties: function (){
@@ -116,7 +134,6 @@ router.get("/Movie/Insert", function(req, res) {
 
 router.get("/Category", function(req, res) {
     Category.all(function (data) {
-        console.log(data);
         res.render('list', {
             title: 'Category',
             columns: Object.keys(new Category()),
@@ -163,28 +180,48 @@ router.get("/Category", function(req, res) {
 });
 
 router.get("/Category/Details/:id", function(req, res) {
-    console.log("Getting Details for Category object with id " + (req.params.id));
-    Category.get(req.params.id, function(data) {
-        if (data){
-            res.render('details', {
-                title: 'Details',
-                properties: function (){
-                    return Object.keys(data).map(key => {
-                        var proprow = {};
-
-                        proprow.name = key;
-                        proprow.value = data[key];
-                        
-                        return proprow;
-                    })
+    Category.get(req.params.id, function (row) {
+        var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Category".toLowerCase()
+                + "-schema.json"));
+        res.render('details', {
+            properties: function () {
+                var allProps = Object.getOwnPropertyNames(row);
+                var validProps = [];
+                allProps.forEach(function (prop) {
+                    if (model.properties.hasOwnProperty(prop)) {
+                        console.log(prop + " -> " + model.properties[prop].presentationMode);
+                        validProps.push({
+                            name: prop,
+                            mode: model.properties[prop].presentationMode,
+                            value: row[prop]
+                        });
+                    }
+                });
+                return validProps;
+            },
+            references: function () {
+                var allRefs = [];
+                if (model.references){
+                    model.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            values: ref.relation == "M-M" ? req.params.id + '/' + ref.model : row[(ref.model + "_id").toLowerCase()]
+                        });
+                    });
                 }
-            })
-        }
-    })
+                return allRefs;
+            },
+            get hasReferences() {
+                return this.references().length > 0;
+            }
+        })
+    });
 });
 
+
+
 router.get("/Category/Edit/:id", function(req, res) {
-    console.log("Getting Edit for Category object with id " + (req.params.id));
     Category.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
@@ -205,7 +242,6 @@ router.get("/Category/Edit/:id", function(req, res) {
 });
 
 router.get("/Category/Insert", function(req, res) {
-    console.log("Getting Insert for Category object");
             res.render('form', {
                 title: 'Details',
                 properties: function (){
@@ -222,7 +258,6 @@ router.get("/Category/Insert", function(req, res) {
 
 router.get("/Director", function(req, res) {
     Director.all(function (data) {
-        console.log(data);
         res.render('list', {
             title: 'Director',
             columns: Object.keys(new Director()),
@@ -269,28 +304,48 @@ router.get("/Director", function(req, res) {
 });
 
 router.get("/Director/Details/:id", function(req, res) {
-    console.log("Getting Details for Director object with id " + (req.params.id));
-    Director.get(req.params.id, function(data) {
-        if (data){
-            res.render('details', {
-                title: 'Details',
-                properties: function (){
-                    return Object.keys(data).map(key => {
-                        var proprow = {};
-
-                        proprow.name = key;
-                        proprow.value = data[key];
-                        
-                        return proprow;
-                    })
+    Director.get(req.params.id, function (row) {
+        var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Director".toLowerCase()
+                + "-schema.json"));
+        res.render('details', {
+            properties: function () {
+                var allProps = Object.getOwnPropertyNames(row);
+                var validProps = [];
+                allProps.forEach(function (prop) {
+                    if (model.properties.hasOwnProperty(prop)) {
+                        console.log(prop + " -> " + model.properties[prop].presentationMode);
+                        validProps.push({
+                            name: prop,
+                            mode: model.properties[prop].presentationMode,
+                            value: row[prop]
+                        });
+                    }
+                });
+                return validProps;
+            },
+            references: function () {
+                var allRefs = [];
+                if (model.references){
+                    model.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            values: ref.relation == "M-M" ? req.params.id + '/' + ref.model : row[(ref.model + "_id").toLowerCase()]
+                        });
+                    });
                 }
-            })
-        }
-    })
+                return allRefs;
+            },
+            get hasReferences() {
+                return this.references().length > 0;
+            }
+        })
+    });
 });
 
+
+
 router.get("/Director/Edit/:id", function(req, res) {
-    console.log("Getting Edit for Director object with id " + (req.params.id));
     Director.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
@@ -311,7 +366,6 @@ router.get("/Director/Edit/:id", function(req, res) {
 });
 
 router.get("/Director/Insert", function(req, res) {
-    console.log("Getting Insert for Director object");
             res.render('form', {
                 title: 'Details',
                 properties: function (){
@@ -328,7 +382,6 @@ router.get("/Director/Insert", function(req, res) {
 
 router.get("/Actor", function(req, res) {
     Actor.all(function (data) {
-        console.log(data);
         res.render('list', {
             title: 'Actor',
             columns: Object.keys(new Actor()),
@@ -375,28 +428,48 @@ router.get("/Actor", function(req, res) {
 });
 
 router.get("/Actor/Details/:id", function(req, res) {
-    console.log("Getting Details for Actor object with id " + (req.params.id));
-    Actor.get(req.params.id, function(data) {
-        if (data){
-            res.render('details', {
-                title: 'Details',
-                properties: function (){
-                    return Object.keys(data).map(key => {
-                        var proprow = {};
-
-                        proprow.name = key;
-                        proprow.value = data[key];
-                        
-                        return proprow;
-                    })
+    Actor.get(req.params.id, function (row) {
+        var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Actor".toLowerCase()
+                + "-schema.json"));
+        res.render('details', {
+            properties: function () {
+                var allProps = Object.getOwnPropertyNames(row);
+                var validProps = [];
+                allProps.forEach(function (prop) {
+                    if (model.properties.hasOwnProperty(prop)) {
+                        console.log(prop + " -> " + model.properties[prop].presentationMode);
+                        validProps.push({
+                            name: prop,
+                            mode: model.properties[prop].presentationMode,
+                            value: row[prop]
+                        });
+                    }
+                });
+                return validProps;
+            },
+            references: function () {
+                var allRefs = [];
+                if (model.references){
+                    model.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            model: ref.model,
+                            values: ref.relation == "M-M" ? req.params.id + '/' + ref.model : row[(ref.model + "_id").toLowerCase()]
+                        });
+                    });
                 }
-            })
-        }
-    })
+                return allRefs;
+            },
+            get hasReferences() {
+                return this.references().length > 0;
+            }
+        })
+    });
 });
 
+
+
 router.get("/Actor/Edit/:id", function(req, res) {
-    console.log("Getting Edit for Actor object with id " + (req.params.id));
     Actor.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
@@ -417,7 +490,6 @@ router.get("/Actor/Edit/:id", function(req, res) {
 });
 
 router.get("/Actor/Insert", function(req, res) {
-    console.log("Getting Insert for Actor object");
             res.render('form', {
                 title: 'Details',
                 properties: function (){

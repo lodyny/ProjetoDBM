@@ -2,13 +2,15 @@ const dbpath = "./Publish/Database/movies.db";
 var database = require('../Database/sqlitedbm.js')(dbpath);
 
 class Movie {
-    constructor (name,year) {
+    constructor (name,year,cover,trailer) {
         Object.defineProperty(this,'id',{ 
                 enumerable:true,
                 writable:true,        
             });
         this.name=name;
 		this.year=year;
+		this.cover=cover;
+		this.trailer=trailer;
 		
 		Object.defineProperty(this, "category_id",{
 			 enumerable: false, writable: true 
@@ -33,16 +35,16 @@ Movie.delete = function (id, callback) {
 
 Movie.prototype.save = function (callback) {
     if(this.id) {//UPDATE
-        database.run("UPDATE Movie SET name = ?,year = ?,category_id = ?,director_id = ? WHERE movie_id = ?", 
-        [this.name,this.year
+        database.run("UPDATE Movie SET name = ?,year = ?,cover = ?,trailer = ?,category_id = ?,director_id = ? WHERE movie_id = ?", 
+        [this.name,this.year,this.cover,this.trailer
             ,this.category_id,this.director_id
             ,this.id
         ]       
         , callback);
     
     } else {//INSERT      
-        database.run("INSERT INTO Movie(name,year ,category_id,director_id) VALUES(?,?, ?, ?)" ,
-         [this.name,this.year
+        database.run("INSERT INTO Movie(name,year,cover,trailer ,category_id,director_id) VALUES(?,?,?,?, ?, ?)" ,
+         [this.name,this.year,this.cover,this.trailer
                 ,this.category_id
                 ,this.director_id
             
@@ -53,11 +55,11 @@ Movie.prototype.save = function (callback) {
 Movie.many = function (model, id, callback){
     var tableName = "Movie_" + model;
     
-    database.where(`SELECT Movie.* FROM Movie INNER JOIN ${tableName} ON ${tableName}.id = Movie.id WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], Movie, callback);
+    database.where(`SELECT Movie.* FROM Movie INNER JOIN ${tableName} ON ${tableName}.Movie_id = Movie.Movie_id WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], Movie, callback);
 }
 
 Movie.mappingDBtoObject = {
-    name:'name',year:'year',movie_id:'id'
+    name:'name',year:'year',cover:'cover',trailer:'trailer',movie_id:'id'
         , category_id : 'category_id'
         , director_id : 'director_id'
 }

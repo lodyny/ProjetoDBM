@@ -37,8 +37,7 @@ app.get('/', function (req, res) {
     var template = fs.readFileSync("./Public/index.mustache").toString();
 
     var template_config = {
-      title: 'Backoffice',
-      status: isServerRunning()
+      title: 'Backoffice'
     };
   
     var output = mustache.render(template, template_config);
@@ -118,6 +117,10 @@ app.post("/stop", function (req, res) {
 app.post("/getStats", function (req, res){
     console.log("IsRunning: " + isServerRunning());
 });
+
+app.get("/getStatus", function (req, res){
+    res.send(isServerRunning());
+})
 
 function isServerRunning(){
     if (teste == null)

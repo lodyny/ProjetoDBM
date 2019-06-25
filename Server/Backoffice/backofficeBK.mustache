@@ -56,46 +56,45 @@ router.get("/{{{name}}}", function(req, res) {
 });
 
 router.get("/{{{name}}}/Details/:id", function(req, res) {
-    {{{name}}}.get(req.params.id, function (row) {
-        var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "{{{name}}}".toLowerCase()
-                + "-schema.json"));
-        res.render('details', {
-            properties: function () {
-                var allProps = Object.getOwnPropertyNames(row);
-                var validProps = [];
-                allProps.forEach(function (prop) {
-                    if (model.properties.hasOwnProperty(prop)) {
-                        console.log(prop + " -> " + model.properties[prop].presentationMode);
-                        validProps.push({
-                            name: prop,
-                            mode: model.properties[prop].presentationMode,
-                            value: row[prop]
+    {{{name}}}.get(req.params.id, function(data) {
+        if (data){
+            var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "{{{name}}}".toLowerCase() 
+                    + "-schema.json"));
+            res.render('details', {
+                title: 'Details',
+                properties: function (){
+                    return Object.keys(data).map(key => {
+                        var proprow = {};
+
+                        proprow.name = key;
+                        proprow.value = data[key];
+                        
+                        return proprow;
+                    })
+                },
+                references: function(){
+                    var allRefs = [];
+                    if(model.references){
+                        model.references.forEach(function(ref){
+                            var required = ref.required === void 0 ? true : ref.required;
+                            if(required){
+                                allRefs.push({
+                                    label:ref.label,
+                                    model: ref.model,
+                                    value:  ref.relation == "M-M" ? req.params.id + '/' + ref.model.toLowerCase() : data[ref.model.toLowerCase() + "_id"]
+                                });
+                            }
                         });
+                        return allRefs;
                     }
-                });
-                return validProps;
-            },
-            references: function () {
-                var allRefs = [];
-                if (model.references){
-                    model.references.forEach(function (ref) {
-                        allRefs.push({
-                            label: ref.label,
-                            model: ref.model,
-                            values: ref.relation == "M-M" ? req.params.id + '/' + ref.model : row[(ref.model + "_id").toLowerCase()]
-                        });
-                    });
-                }
-                return allRefs;
-            },
-            get hasReferences() {
-                return this.references().length > 0;
-            }
-        })
-    });
+                },
+                get hasReferences(){
+                    return this.references().length > 0;
+                }  
+            })
+        }
+    })
 });
-
-
 
 router.get("/{{{name}}}/Edit/:id", function(req, res) {
     {{{name}}}.get(req.params.id, function(data) {

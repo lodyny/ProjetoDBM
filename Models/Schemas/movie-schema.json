@@ -12,15 +12,27 @@
             "description": "movie release date",
             "type":"integer",
 			"regex":"\\d{4}"
+        },
+        "cover":{
+            "description": "movie photo",
+            "type":"string",
+            "presentationMode":"image"
+        },
+        "trailer":{
+            "description": "movie trailer",
+            "type":"string",
+            "presentationMode":"video"
         }
     },
-    "required": ["name","year"],
+    "required": ["name","year","cover","trailer"],
     "references": [{
         "model": "Category",
-        "relation": "1-M"
+        "relation": "1-M",
+        "label": "LabelCategory"
     }
     ,{
         "model": "Director",
-        "relation": "1-M"
+        "relation": "1-M",
+        "label": "LabelDirector"
     }]
 }

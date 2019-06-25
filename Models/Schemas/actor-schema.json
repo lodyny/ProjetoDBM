@@ -17,6 +17,7 @@
     "required": ["name","birthyear"],
     "references": [{
         "model": "Movie",
-        "relation": "M-M"
+        "relation": "M-M",
+        "label": "LabelMovie"
     }]
 }
