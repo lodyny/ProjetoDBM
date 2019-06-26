@@ -58,6 +58,21 @@ Movie.many = function (model, id, callback){
     database.where(`SELECT Movie.* FROM Movie INNER JOIN ${tableName} ON ${tableName}.Movie_id = Movie.Movie_id WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], Movie, callback);
 }
 
+Movie.top = function (property,order,limit,callback) {
+    var dbprop = Object.keys(Movie.mappingDBtoObject).find(key => Movie.mappingDBtoObject[key] == property);
+    database.where(`SELECT * FROM Movie ORDER BY ${dbprop} ${order} LIMIT ?`, [limit], Movie, callback);
+}
+
+Movie.topWith1M = function(model, order, limit,callback){
+    var attributeModel = model.toLowerCase();
+    database.where(`select a.*,b.* from Movie a, ${model} b where a.${attributeModel}_id = b.${attributeModel}_id ORDER by a.${order} LIMIT ?`, [limit], Movie, callback);
+}
+
+Movie.topWithMMCount = function (model, order,limit,callback) {
+    var nmTableName = database.getNMTableName("Movie", model);
+    database.where(`select a.*, count(b.Movie_id) as count from Movie a, ${nmTableName} b where a.Movie_id = b.Movie_id group by a.Movie_id order by count ${order} LIMIT ?`, [limit], Movie, callback);
+}
+
 Movie.mappingDBtoObject = {
     name:'name',year:'year',cover:'cover',trailer:'trailer',movie_id:'id'
         , category_id : 'category_id'

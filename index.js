@@ -13,6 +13,7 @@ var dbGenerator = require('./Models/Database/database-generator');
 var serverGenerator = require('./Server/server-generator');
 var apiGenerator = require('./Server/API/api-generator');
 var backofficeGenerator = require('./Server/Backoffice/backoffice-generator');
+var frontofficeGenerator = require('./Server/Frontoffice/frontoffice-generator');
 // End Generators
 
 // Variables
@@ -29,20 +30,31 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(express.static('Public'));
 
-app.get('/Hello', function (req, res) {
-    res.send("Hello");
-});
-
-app.get('/', function (req, res) {
-    var template = fs.readFileSync("./Public/index.mustache").toString();
+/*app.get('/', function (req, res) {
+    var template = fs.readFileSync("./Public/template.mustache").toString();
 
     var template_config = {
-      title: 'Backoffice'
+      title: 'Generator',
+      menu: fs.readFileSync("./Public/menu.mustache").toString(),
+      page: fs.readFileSync("./Public/status.mustache").toString()
     };
   
     var output = mustache.render(template, template_config);
     res.send(output);
 });
+
+app.get('/about', function (req, res){
+    var template = fs.readFileSync("./Public/template.mustache").toString();
+
+    var template_config = {
+      title: 'Generator',
+      menu: fs.readFileSync("./Public/menu.mustache").toString(),
+      page: fs.readFileSync("./Public/about.mustache").toString()
+    };
+  
+    var output = mustache.render(template, template_config);
+    res.send(output);
+});*/
 
 function readConfigs() {
     var config = JSON.parse(fs.readFileSync("./Server/config.json"));
@@ -74,16 +86,10 @@ function generate() {
     dbGenerator.generateDatabase(schemas, dbname, true);
     apiGenerator.generateAPI(schemas);
     backofficeGenerator.generateBackoffice(schemas);
+    frontofficeGenerator.generateFrontoffice(schemas);
     deployedServer = serverGenerator.generateServer(port);
     //runDeployedServer(deployedServer);
 };
-
-function runDeployedServer(deployedServer) {
-    let _child = childProcess.fork(deployedServer);
-    _child.on('exit', function (code, signal){
-        console.log('child process exit with ' + code + ' and signal ' + signal);
-    });
-}
 
 var teste;
 function startPublish(){
@@ -120,7 +126,66 @@ app.post("/getStats", function (req, res){
 
 app.get("/getStatus", function (req, res){
     res.send(isServerRunning());
-})
+});
+
+app.get("/models", function (req, res){
+    var config = fs.readFileSync("./Server/config.json");
+    config = JSON.parse(config);
+
+    var files_list = [];
+    var aux_file;
+
+    config.schemas.forEach(function(model) {
+        aux_file = fs.readFileSync(model.path);
+        files_list.push(JSON.parse(aux_file));
+    });
+
+    res.send(files_list);
+});
+
+app.get("/model/:name", function (req, res){
+    var config = fs.readFileSync("./Server/config.json");
+    config = JSON.parse(config);
+    var aux_file = null;
+    config.schemas.some(function(model){
+        if (model.name.toLowerCase() == req.params.name.toLowerCase())
+            aux_file = fs.readFileSync(model.path);
+
+        return aux_file != null;
+    });
+
+    var parsed = JSON.parse(aux_file);
+    res.send(parsed);
+});
+
+app.post("/generateModel", function (req, res){
+    fs.writeFileSync("./Models/Schemas/" + req.body.title + "-schema.json", JSON.stringify(req.body));
+    var config_json = fs.readFileSync("./Server/config.json");
+    
+    config_json = JSON.parse(config_json);
+    
+    var model = {
+        name: req.body.title,
+        path: "./Models/Schemas/" + req.body.title + "-schema.json"
+      };
+    
+    if (!modelCreated(model, config_json.models)) config_json.models.push(model);
+    
+    fs.writeFileSync("./Server/config.json", JSON.stringify(config_json));
+    
+    res.sendStatus(200);
+});
+
+function modelCreated(model, models) {
+    var i;
+    for (i = 0; i < models.length; i++) {
+      if (models[i].name === model.name) {
+        return true;
+      }
+    }
+  
+    return false;
+  }
 
 function isServerRunning(){
     if (teste == null)
@@ -141,11 +206,3 @@ function moveStaticFiles() {
         fs.writeFileSync(file.destinationPath + file.fileName, data);
     });
 }
-
-
-
-// Forçar generate para não estar sempre a entrar na página backoffice
-//generate();
-
-// Rodar apenas o published
-//runDeployedServer("./Publish/index.js");

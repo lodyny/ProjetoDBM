@@ -12,6 +12,7 @@ router.get("/{{{name}}}", function(req, res) {
     {{{name}}}.all(function (data) {
         res.render('list', {
             title: '{{{name}}}',
+            menu: getMenu(),
             columns: Object.keys(new {{{name}}}()),
             rows: data.map(obj => {
                 return {
@@ -44,7 +45,7 @@ router.get("/{{{name}}}", function(req, res) {
                         tooltip: 'Delete',
                         events: [{
                             name: "onclick",
-                            function: "delete",
+                            function: "deleteRecord",
                             args: obj.id
                         }]
 
@@ -60,17 +61,32 @@ router.get("/{{{name}}}/Details/:id", function(req, res) {
         var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "{{{name}}}".toLowerCase()
                 + "-schema.json"));
         res.render('details', {
+            title: '{{{name}}}',
+            menu: getMenu(),
             properties: function () {
                 var allProps = Object.getOwnPropertyNames(row);
                 var validProps = [];
                 allProps.forEach(function (prop) {
                     if (model.properties.hasOwnProperty(prop)) {
-                        console.log(prop + " -> " + model.properties[prop].presentationMode);
-                        validProps.push({
+                        var validProp = {
                             name: prop,
-                            mode: model.properties[prop].presentationMode,
                             value: row[prop]
-                        });
+                        };
+
+                        var presentationMode = model.properties[prop].presentationMode;
+
+                        if(presentationMode == 'image'){
+                            validProp.image = true;
+                        }
+                        else if(presentationMode == 'video'){
+                            validProp.video = true;
+                        }
+                        else {
+                            validProp.text = true;
+                        }
+
+
+                        validProps.push(validProp);
                     }
                 });
                 return validProps;
@@ -101,7 +117,8 @@ router.get("/{{{name}}}/Edit/:id", function(req, res) {
     {{{name}}}.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
-                title: 'Details',
+                title: '{{{name}}}',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(data).map(key => {
                         var proprow = {};
@@ -119,7 +136,8 @@ router.get("/{{{name}}}/Edit/:id", function(req, res) {
 
 router.get("/{{{name}}}/Insert", function(req, res) {
             res.render('form', {
-                title: 'Details',
+                title: '{{{name}}}',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(new {{{name}}}()).map(key => {
                         var proprow = {};
@@ -133,5 +151,22 @@ router.get("/{{{name}}}/Insert", function(req, res) {
 });
 
 {{/models}}
+
+function getMenu (){
+    var menu = fs.readFileSync("./Publish/Views/menu.mustache").toString();
+
+    schemas = [];
+    var config = JSON.parse(fs.readFileSync("./Server/config.json"));
+
+    config.schemas.forEach(model => {
+        schemas.push(model);
+    });
+
+    var menu_config = {
+        schemas: schemas
+    }
+
+    return mustache.render(menu, menu_config);
+}
 
 module.exports = router;

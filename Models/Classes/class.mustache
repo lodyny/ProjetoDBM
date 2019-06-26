@@ -51,6 +51,21 @@ class {{classTitle}} {
     database.where(`SELECT {{classTitle}}.* FROM {{classTitle}} INNER JOIN ${tableName} ON ${tableName}.{{classTitle}}_{{primaryKey.name}} = {{classTitle}}.{{classTitle}}_{{primaryKey.name}} WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], {{classTitle}}, callback);
 }
 
+{{classTitle}}.top = function (property,order,limit,callback) {
+    var dbprop = Object.keys({{classTitle}}.mappingDBtoObject).find(key => {{classTitle}}.mappingDBtoObject[key] == property);
+    database.where(`SELECT * FROM {{classTitle}} ORDER BY ${dbprop} ${order} LIMIT ?`, [limit], {{classTitle}}, callback);
+}
+
+{{classTitle}}.topWith1M = function(model, order, limit,callback){
+    var attributeModel = model.toLowerCase();
+    database.where(`select a.*,b.* from {{classTitle}} a, ${model} b where a.${attributeModel}_id = b.${attributeModel}_id ORDER by a.${order} LIMIT ?`, [limit], {{{classTitle}}}, callback);
+}
+
+{{classTitle}}.topWithMMCount = function (model, order,limit,callback) {
+    var nmTableName = database.getNMTableName("{{classTitle}}", model);
+    database.where(`select a.*, count(b.{{classTitle}}_id) as count from {{classTitle}} a, ${nmTableName} b where a.{{classTitle}}_id = b.{{classTitle}}_id group by a.{{classTitle}}_id order by count ${order} LIMIT ?`, [limit], {{classTitle}}, callback);
+}
+
 {{classTitle}}.mappingDBtoObject = {
     {{{mappingDBtoObject}}}
     {{#classReferences}}

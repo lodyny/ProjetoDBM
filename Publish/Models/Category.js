@@ -47,6 +47,21 @@ Category.many = function (model, id, callback){
     database.where(`SELECT Category.* FROM Category INNER JOIN ${tableName} ON ${tableName}.Category_id = Category.Category_id WHERE ${tableName}.${model.toLowerCase()}_id = ?`, [id], Category, callback);
 }
 
+Category.top = function (property,order,limit,callback) {
+    var dbprop = Object.keys(Category.mappingDBtoObject).find(key => Category.mappingDBtoObject[key] == property);
+    database.where(`SELECT * FROM Category ORDER BY ${dbprop} ${order} LIMIT ?`, [limit], Category, callback);
+}
+
+Category.topWith1M = function(model, order, limit,callback){
+    var attributeModel = model.toLowerCase();
+    database.where(`select a.*,b.* from Category a, ${model} b where a.${attributeModel}_id = b.${attributeModel}_id ORDER by a.${order} LIMIT ?`, [limit], Category, callback);
+}
+
+Category.topWithMMCount = function (model, order,limit,callback) {
+    var nmTableName = database.getNMTableName("Category", model);
+    database.where(`select a.*, count(b.Category_id) as count from Category a, ${nmTableName} b where a.Category_id = b.Category_id group by a.Category_id order by count ${order} LIMIT ?`, [limit], Category, callback);
+}
+
 Category.mappingDBtoObject = {
     name:'name',category_id:'id'
 }

@@ -2,16 +2,16 @@
     "port": 8080,
     "dbname": "movies.db",
     "schemas": [{
-        "name:": "Movie",
+        "name": "Movie",
         "path": "./Models/Schemas/movie-schema.json"
     }, {
-        "name:": "Category",
+        "name": "Category",
         "path": "./Models/Schemas/category-schema.json"
     }, {
-        "name:": "Director",
+        "name": "Director",
         "path": "./Models/Schemas/director-schema.json"
     }, {
-        "name:": "Actor",
+        "name": "Actor",
         "path": "./Models/Schemas/actor-schema.json"
     }],
     "staticFiles": [{
@@ -42,8 +42,30 @@
         "fileName": "read.png",
         "originalPath": "./Server/StaticFiles/",
         "destinationPath": "./Publish/Public/Images/"
+    }, {
+        "fileName": "template.mustache",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Views/"
+    }, {
+        "fileName": "menu.mustache",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Views/"
+    }, {
+        "fileName": "tema1.css",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Public/Css/"
+    }, {
+        "fileName": "home.mustache",
+        "originalPath": "./Server/StaticFiles/",
+        "destinationPath": "./Publish/Views/"
     }],
     "databases": [{
         "tableName": "Actor_Movie"
+    }],
+    "frontoffice": [{
+        "model": "Actor",
+        "property": "name",
+        "order": "DESC",
+        "limit": 3
     }]
 }

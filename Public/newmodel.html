@@ -1,0 +1,200 @@
+<html>
+
+<head>
+  <title>Generator</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script src="/js/model.js"></script>
+  <script src="/js/modelsManager.js"></script>
+</head>
+
+<body onload="javascript:renderPropertyTable();renderModelsList();renderReferencesTable();">
+  <!-- MENU -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">DBM</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Generator <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/models.html">Models</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/newmodel.html">Model Editor</a>
+              </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about.html">About</a>
+          </li>
+        </ul>
+        <button id="serverstatus" class="btn btn-outline-danger my-2 my-sm-0"
+          onclick="window.open('http://localhost:8080');">Server
+          Offline</button>
+      </div>
+    </nav>
+  
+    <script>
+      var interval = 1000; // 1000 = 1 second, 3000 = 3 seconds
+      function doAjax() {
+        $.ajax({
+          type: 'GET',
+          url: '/getStatus',
+          data: $(this).serialize(),
+          dataType: 'json',
+          success: function (status) {
+            if (status) {
+              $('#serverstatus').html("Server Online");
+              $('#serverstatus').removeClass().addClass('btn btn-outline-success my-2 my-sm-0');
+            } else {
+              $('#serverstatus').html("Server Offline");
+              $('#serverstatus').removeClass().addClass('btn btn-outline-danger my-2 my-sm-0');
+            }
+  
+          },
+          complete: function (data) {
+            // Schedule the next
+            setTimeout(doAjax, interval);
+          }
+        });
+      }
+      setTimeout(doAjax, interval);
+    </script>
+    <!-- FIM MENU -->
+  <br />
+ <!-- BODY -->
+ <div class="container-fluid">
+    <div id="properties">
+        <table class="table table-hover" id="properties_table">
+
+        </table>
+
+        <table class="table table-hover" id="references_table">
+
+        </table>
+    </div>
+
+    <div class="forms">
+        <div id="model_form">
+            <h2>Model</h2>
+            <div class="form-group">
+                <label for="model_title">Model Name</label>
+                <input class="form-control" type="text" id="model_title" name="model_title" placeholder="Model Name">
+            </div>
+            <div class="form-group">
+                <label for="description">Model Description</label>
+                <input class="form-control" type="text" id="model_description" name="model_description" placeholder="Description">
+            </div>
+        </div>
+        <br>
+
+        <div id="property_form">
+            <h2>Property</h2>
+            <div class="form-group">
+                <label for="property_name">Name</label>
+                <input class="form-control has-warning" type="text" id="property_name" name="property_name" placeholder="Property Name">
+                <span id="property-error" class="error text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="property_description">Description</label>
+                <input class="form-control" type="text" id="property_description" name="property_description" placeholder="Property Description">
+            </div>
+
+            <div class="form-group">
+                <label for="property_label">Label Name (in details)</label>
+                <input class="form-control" type="text" id="property_label" name="property_label" placeholder="Property Label">
+            </div>
+
+            <div class="form-group">
+                <label for="property_type">Type</label>
+                <select class="form-control" id="property_type" onChange="refreshExtraProperties();" name="property_type" style="width: 150px;">
+                    <option value="string">String</option>
+                    <option value="number">Number</option>
+                    <option value="real">Real</option>
+                    <option value="char">Character</option>
+                    <option value="array">Array</option>
+                </select>
+            </div>
+            <div id="extra-restrictions">
+                <div class="form-group" id="pattern-container">
+                    <label for="property_pattern">Pattern</label>
+                    <input class="form-control" type="text" id="property_pattern" name="property_pattern" placeholder="Property Pattern">
+                </div>
+                <div class="form-row" id="pattern-range">
+                        <div class="form-group col-md-4">
+                            <label for="property_minimum">Minimum</label>
+                            <input class="form-control" type="text" id="property_minimum" name="property_minimum" disabled>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="property_maximum">Maximum</label>
+                            <input class="form-control" type="text" id="property_maximum" name="property_maximum" disabled>
+                        </div>
+                </div>
+            </div>
+            <div>
+                <label for="property_mandatory">Required Property</label>
+                <input type="checkbox" id="property_mandatory" name="property_mandatory" value="mandatory">
+                <label style="margin-left:4%;" for="property_unique">Unique Property</label>
+                <input type="checkbox" id="property_unique" name="property_unique" value="unique">
+                <button style="margin-left:4%;" onClick="addProperty();">Add</button>
+            </div>
+
+        </div>
+        <div id="reference-form">
+            <h2>Reference</h2>
+            <div class="form-group">
+                <label for="reference_model">Model</label>
+                <select class="form-control" id="reference_model" onchange="refreshReferenceHelper();refreshReferenceLabel();" name="reference_model" style="width: 150px;">
+                    
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reference_relation">Relation</label>
+                <select class="form-control" onchange="refreshReferenceHelper();" id="reference_relation" name="reference_relation" style="width: 150px;">
+                    <option value="1-1">1-1</option>
+                    <option value="0-M">0-N</option>
+                    <option value="1-M">1-N</option>
+                    <option value="M-M">N-N</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="reference_label">Property to show as label</label>
+                <select class="form-control" id="reference_label" name="reference_label" style="width: 150px;">
+                    
+                </select>
+            </div>
+            <p id="reference-helper"></p>
+            <div class="form-group">
+                <label for="is_reference_required">Required on reference insert form</label>
+                <input class="form-control" type="checkbox" id="is_reference_required" name="is_reference_required" value="required" checked>
+            </div>
+            <button style="margin-left:7.3%;" onClick="addReference();">Add</button>
+            
+        </div>
+
+        <div>
+            <div class="submit-on-footer">
+                <button onClick="submitModel();">Submit Model</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- FIM BODY -->
+</body>
+
+</html>

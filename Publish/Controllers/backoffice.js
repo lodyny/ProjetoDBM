@@ -12,6 +12,7 @@ router.get("/Movie", function(req, res) {
     Movie.all(function (data) {
         res.render('list', {
             title: 'Movie',
+            menu: getMenu(),
             columns: Object.keys(new Movie()),
             rows: data.map(obj => {
                 return {
@@ -44,7 +45,7 @@ router.get("/Movie", function(req, res) {
                         tooltip: 'Delete',
                         events: [{
                             name: "onclick",
-                            function: "delete",
+                            function: "deleteRecord",
                             args: obj.id
                         }]
 
@@ -60,17 +61,32 @@ router.get("/Movie/Details/:id", function(req, res) {
         var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Movie".toLowerCase()
                 + "-schema.json"));
         res.render('details', {
+            title: 'Movie',
+            menu: getMenu(),
             properties: function () {
                 var allProps = Object.getOwnPropertyNames(row);
                 var validProps = [];
                 allProps.forEach(function (prop) {
                     if (model.properties.hasOwnProperty(prop)) {
-                        console.log(prop + " -> " + model.properties[prop].presentationMode);
-                        validProps.push({
+                        var validProp = {
                             name: prop,
-                            mode: model.properties[prop].presentationMode,
                             value: row[prop]
-                        });
+                        };
+
+                        var presentationMode = model.properties[prop].presentationMode;
+
+                        if(presentationMode == 'image'){
+                            validProp.image = true;
+                        }
+                        else if(presentationMode == 'video'){
+                            validProp.video = true;
+                        }
+                        else {
+                            validProp.text = true;
+                        }
+
+
+                        validProps.push(validProp);
                     }
                 });
                 return validProps;
@@ -101,7 +117,8 @@ router.get("/Movie/Edit/:id", function(req, res) {
     Movie.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
-                title: 'Details',
+                title: 'Movie',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(data).map(key => {
                         var proprow = {};
@@ -119,7 +136,8 @@ router.get("/Movie/Edit/:id", function(req, res) {
 
 router.get("/Movie/Insert", function(req, res) {
             res.render('form', {
-                title: 'Details',
+                title: 'Movie',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(new Movie()).map(key => {
                         var proprow = {};
@@ -136,6 +154,7 @@ router.get("/Category", function(req, res) {
     Category.all(function (data) {
         res.render('list', {
             title: 'Category',
+            menu: getMenu(),
             columns: Object.keys(new Category()),
             rows: data.map(obj => {
                 return {
@@ -168,7 +187,7 @@ router.get("/Category", function(req, res) {
                         tooltip: 'Delete',
                         events: [{
                             name: "onclick",
-                            function: "delete",
+                            function: "deleteRecord",
                             args: obj.id
                         }]
 
@@ -184,17 +203,32 @@ router.get("/Category/Details/:id", function(req, res) {
         var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Category".toLowerCase()
                 + "-schema.json"));
         res.render('details', {
+            title: 'Category',
+            menu: getMenu(),
             properties: function () {
                 var allProps = Object.getOwnPropertyNames(row);
                 var validProps = [];
                 allProps.forEach(function (prop) {
                     if (model.properties.hasOwnProperty(prop)) {
-                        console.log(prop + " -> " + model.properties[prop].presentationMode);
-                        validProps.push({
+                        var validProp = {
                             name: prop,
-                            mode: model.properties[prop].presentationMode,
                             value: row[prop]
-                        });
+                        };
+
+                        var presentationMode = model.properties[prop].presentationMode;
+
+                        if(presentationMode == 'image'){
+                            validProp.image = true;
+                        }
+                        else if(presentationMode == 'video'){
+                            validProp.video = true;
+                        }
+                        else {
+                            validProp.text = true;
+                        }
+
+
+                        validProps.push(validProp);
                     }
                 });
                 return validProps;
@@ -225,7 +259,8 @@ router.get("/Category/Edit/:id", function(req, res) {
     Category.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
-                title: 'Details',
+                title: 'Category',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(data).map(key => {
                         var proprow = {};
@@ -243,7 +278,8 @@ router.get("/Category/Edit/:id", function(req, res) {
 
 router.get("/Category/Insert", function(req, res) {
             res.render('form', {
-                title: 'Details',
+                title: 'Category',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(new Category()).map(key => {
                         var proprow = {};
@@ -260,6 +296,7 @@ router.get("/Director", function(req, res) {
     Director.all(function (data) {
         res.render('list', {
             title: 'Director',
+            menu: getMenu(),
             columns: Object.keys(new Director()),
             rows: data.map(obj => {
                 return {
@@ -292,7 +329,7 @@ router.get("/Director", function(req, res) {
                         tooltip: 'Delete',
                         events: [{
                             name: "onclick",
-                            function: "delete",
+                            function: "deleteRecord",
                             args: obj.id
                         }]
 
@@ -308,17 +345,32 @@ router.get("/Director/Details/:id", function(req, res) {
         var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Director".toLowerCase()
                 + "-schema.json"));
         res.render('details', {
+            title: 'Director',
+            menu: getMenu(),
             properties: function () {
                 var allProps = Object.getOwnPropertyNames(row);
                 var validProps = [];
                 allProps.forEach(function (prop) {
                     if (model.properties.hasOwnProperty(prop)) {
-                        console.log(prop + " -> " + model.properties[prop].presentationMode);
-                        validProps.push({
+                        var validProp = {
                             name: prop,
-                            mode: model.properties[prop].presentationMode,
                             value: row[prop]
-                        });
+                        };
+
+                        var presentationMode = model.properties[prop].presentationMode;
+
+                        if(presentationMode == 'image'){
+                            validProp.image = true;
+                        }
+                        else if(presentationMode == 'video'){
+                            validProp.video = true;
+                        }
+                        else {
+                            validProp.text = true;
+                        }
+
+
+                        validProps.push(validProp);
                     }
                 });
                 return validProps;
@@ -349,7 +401,8 @@ router.get("/Director/Edit/:id", function(req, res) {
     Director.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
-                title: 'Details',
+                title: 'Director',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(data).map(key => {
                         var proprow = {};
@@ -367,7 +420,8 @@ router.get("/Director/Edit/:id", function(req, res) {
 
 router.get("/Director/Insert", function(req, res) {
             res.render('form', {
-                title: 'Details',
+                title: 'Director',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(new Director()).map(key => {
                         var proprow = {};
@@ -384,6 +438,7 @@ router.get("/Actor", function(req, res) {
     Actor.all(function (data) {
         res.render('list', {
             title: 'Actor',
+            menu: getMenu(),
             columns: Object.keys(new Actor()),
             rows: data.map(obj => {
                 return {
@@ -416,7 +471,7 @@ router.get("/Actor", function(req, res) {
                         tooltip: 'Delete',
                         events: [{
                             name: "onclick",
-                            function: "delete",
+                            function: "deleteRecord",
                             args: obj.id
                         }]
 
@@ -432,17 +487,32 @@ router.get("/Actor/Details/:id", function(req, res) {
         var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "Actor".toLowerCase()
                 + "-schema.json"));
         res.render('details', {
+            title: 'Actor',
+            menu: getMenu(),
             properties: function () {
                 var allProps = Object.getOwnPropertyNames(row);
                 var validProps = [];
                 allProps.forEach(function (prop) {
                     if (model.properties.hasOwnProperty(prop)) {
-                        console.log(prop + " -> " + model.properties[prop].presentationMode);
-                        validProps.push({
+                        var validProp = {
                             name: prop,
-                            mode: model.properties[prop].presentationMode,
                             value: row[prop]
-                        });
+                        };
+
+                        var presentationMode = model.properties[prop].presentationMode;
+
+                        if(presentationMode == 'image'){
+                            validProp.image = true;
+                        }
+                        else if(presentationMode == 'video'){
+                            validProp.video = true;
+                        }
+                        else {
+                            validProp.text = true;
+                        }
+
+
+                        validProps.push(validProp);
                     }
                 });
                 return validProps;
@@ -473,7 +543,8 @@ router.get("/Actor/Edit/:id", function(req, res) {
     Actor.get(req.params.id, function(data) {
         if (data){
             res.render('form', {
-                title: 'Details',
+                title: 'Actor',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(data).map(key => {
                         var proprow = {};
@@ -491,7 +562,8 @@ router.get("/Actor/Edit/:id", function(req, res) {
 
 router.get("/Actor/Insert", function(req, res) {
             res.render('form', {
-                title: 'Details',
+                title: 'Actor',
+                menu: getMenu(),
                 properties: function (){
                     return Object.keys(new Actor()).map(key => {
                         var proprow = {};
@@ -504,5 +576,22 @@ router.get("/Actor/Insert", function(req, res) {
             })
 });
 
+
+function getMenu (){
+    var menu = fs.readFileSync("./Publish/Views/menu.mustache").toString();
+
+    schemas = [];
+    var config = JSON.parse(fs.readFileSync("./Server/config.json"));
+
+    config.schemas.forEach(model => {
+        schemas.push(model);
+    });
+
+    var menu_config = {
+        schemas: schemas
+    }
+
+    return mustache.render(menu, menu_config);
+}
 
 module.exports = router;
