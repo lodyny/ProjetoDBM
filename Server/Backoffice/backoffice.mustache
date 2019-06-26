@@ -115,6 +115,7 @@ router.get("/{{{name}}}/Details/:id", function(req, res) {
 
 router.get("/{{{name}}}/Edit/:id", function(req, res) {
     var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "{{{name}}}".toLowerCase()
+    + "-schema.json"));
     {{{name}}}.get(req.params.id, function(data) {
         if (data){
             var obj = new {{{name}}};
