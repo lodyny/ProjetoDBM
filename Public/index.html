@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title>Generator</title>
+  <title>Generator - Homepage</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -14,77 +14,85 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
   </script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <script>
+    function reloadPage() {
+      location.reload();
+    }
+
+    function makeRequest(method, url) {
+      var xhr = new XMLHttpRequest();
+      xhr.open(method, url, true);
+      xhr.send();
+    }
+  </script>
 </head>
 
 <body>
   <!-- MENU -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="#">DBM</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="/">Generator <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-              <a class="nav-link" href="/models.html">Models</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/newmodel.html">Model Editor</a>
-              </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/about.html">About</a>
-          </li>
-        </ul>
-        <button id="serverstatus" class="btn btn-outline-danger my-2 my-sm-0"
-          onclick="window.open('http://localhost:8080');">Server
-          Offline</button>
-      </div>
-    </nav>
-  
-    <script>
-      var interval = 1000; // 1000 = 1 second, 3000 = 3 seconds
-      function doAjax() {
-        $.ajax({
-          type: 'GET',
-          url: '/getStatus',
-          data: $(this).serialize(),
-          dataType: 'json',
-          success: function (status) {
-            if (status) {
-              $('#serverstatus').html("Server Online");
-              $('#serverstatus').removeClass().addClass('btn btn-outline-success my-2 my-sm-0');
-            } else {
-              $('#serverstatus').html("Server Offline");
-              $('#serverstatus').removeClass().addClass('btn btn-outline-danger my-2 my-sm-0');
-            }
-  
-          },
-          complete: function (data) {
-            // Schedule the next
-            setTimeout(doAjax, interval);
+    <a class="navbar-brand" href="#">DBM</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Generator <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/models.html">Models</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/newmodel.html">New Model</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about.html">About</a>
+        </li>
+      </ul>
+      <button id="serverstatus" class="btn btn-outline-danger my-2 my-sm-0"
+        onclick="window.open('http://localhost:8080');">Server
+        Offline</button>
+    </div>
+  </nav>
+
+  <script>
+    var interval = 1000; // 1000 = 1 second, 3000 = 3 seconds
+    function doAjax() {
+      $.ajax({
+        type: 'GET',
+        url: '/getStatus',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function (status) {
+          if (status) {
+            $('#serverstatus').html("Server Online");
+            $('#serverstatus').removeClass().addClass('btn btn-outline-success my-2 my-sm-0');
+          } else {
+            $('#serverstatus').html("Server Offline");
+            $('#serverstatus').removeClass().addClass('btn btn-outline-danger my-2 my-sm-0');
           }
-        });
-      }
-      setTimeout(doAjax, interval);
-    </script>
-    <!-- FIM MENU -->
+
+        },
+        complete: function (data) {
+          // Schedule the next
+          setTimeout(doAjax, interval);
+        }
+      });
+    }
+    setTimeout(doAjax, interval);
+  </script>
+  <!-- FIM MENU -->
   <br />
- <!-- BODY -->
- <div class="container-fluid">
-    <form action="/generate" method="POST">
-      <input type="submit" class="btn btn-primary" value="GENERATE SERVER" />
-    </form>
-    <form action="/start" method="POST">
-      <input type="submit" class="btn btn-success" value="START SERVER" />
-    </form>
-    <form action="/stop" method="POST">
-      <input type="submit" class="btn btn-danger" value="STOP SERVER" />
-    </form>
+  <!-- BODY -->
+  <div class="container-fluid" style="text-align:center">
+      <input type="submit" class="btn btn-primary" value="GENERATE SERVER"
+        onclick="this.disabled=true; this.value='Generating... Wait Please!';makeRequest('POST', '/generate');setTimeout(reloadPage, 4000);" />
+      <input type="submit" class="btn btn-success" value="START SERVER"
+        onclick="this.disabled=true; this.value='Starting... Wait Please!';makeRequest('POST', '/start');setTimeout(reloadPage, 2000);" />
+      <input type="submit" class="btn btn-danger" value="STOP SERVER"
+      onclick="this.disabled=true; this.value='Stopping... Wait Please!';makeRequest('POST', '/stop');setTimeout(reloadPage, 2000);"  />
 
   </div>
   <!-- FIM BODY -->

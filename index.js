@@ -76,6 +76,7 @@ function startPublish(){
 }
 
 app.post("/generate", function (req, res) {
+    console.log("Generating...");
     generate();
     console.log("Server deployment started...");
     res.redirect('/');

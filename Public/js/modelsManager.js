@@ -180,7 +180,7 @@ function generate() {
     });
   
     document.getElementById("models-count").textContent =
-      "There are " + models.length + " models created.";
+      "Number of existent models: " + models.length;
   }
   
   function removeModelCard(id) {
