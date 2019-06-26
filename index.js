@@ -30,32 +30,6 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(express.static('Public'));
 
-/*app.get('/', function (req, res) {
-    var template = fs.readFileSync("./Public/template.mustache").toString();
-
-    var template_config = {
-      title: 'Generator',
-      menu: fs.readFileSync("./Public/menu.mustache").toString(),
-      page: fs.readFileSync("./Public/status.mustache").toString()
-    };
-  
-    var output = mustache.render(template, template_config);
-    res.send(output);
-});
-
-app.get('/about', function (req, res){
-    var template = fs.readFileSync("./Public/template.mustache").toString();
-
-    var template_config = {
-      title: 'Generator',
-      menu: fs.readFileSync("./Public/menu.mustache").toString(),
-      page: fs.readFileSync("./Public/about.mustache").toString()
-    };
-  
-    var output = mustache.render(template, template_config);
-    res.send(output);
-});*/
-
 function readConfigs() {
     var config = JSON.parse(fs.readFileSync("./Server/config.json"));
     if (config == null)
@@ -169,7 +143,8 @@ app.post("/generateModel", function (req, res){
         path: "./Models/Schemas/" + req.body.title + "-schema.json"
       };
     
-    if (!modelCreated(model, config_json.models)) config_json.models.push(model);
+    if (!modelCreated(model, config_json.schemas))
+        config_json.schemas.push(model);
     
     fs.writeFileSync("./Server/config.json", JSON.stringify(config_json));
     
@@ -177,6 +152,7 @@ app.post("/generateModel", function (req, res){
 });
 
 function modelCreated(model, models) {
+    console.log()
     var i;
     for (i = 0; i < models.length; i++) {
       if (models[i].name === model.name) {
