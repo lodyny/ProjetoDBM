@@ -114,39 +114,91 @@ router.get("/{{{name}}}/Details/:id", function(req, res) {
 
 
 router.get("/{{{name}}}/Edit/:id", function(req, res) {
+    var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "{{{name}}}".toLowerCase()
     {{{name}}}.get(req.params.id, function(data) {
         if (data){
+            var obj = new {{{name}}};
             res.render('form', {
                 title: '{{{name}}}',
+                model: '{{{name}}}',
+                modelID: req.params.id,
                 menu: getMenu(),
+                isEditForm: true,
                 properties: function (){
-                    return Object.keys(data).map(key => {
-                        var proprow = {};
-
-                        proprow.name = key;
-                        proprow.value = data[key];
-                        
-                        return proprow;
-                    })
+                    var allProps = Object.getOwnPropertyNames(new {{{name}}}());
+                    var validProps = [];
+                    allProps.forEach(function (prop) {
+                        if (prop.includes('id'))
+                            return;
+                        var proprow = {
+                            name: prop,
+                            labelName: prop,
+                            value: data[prop]
+                        };
+                        validProps.push(proprow);
+                    });
+                    return validProps;
+                },
+                references: function () {
+                var allRefs = [];
+                if (model.references){
+                    model.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            is_mm_relation: (ref.relation === 'M-M'),
+                            model: ref.model,
+                            value: data[ref.model.toLowerCase() + "_id"]
+                        });
+                    });
                 }
+                return allRefs;
+            },
+            get hasReferences() {
+                return this.references().length > 0;
+            }
             })
         }
     })
 });
 
 router.get("/{{{name}}}/Insert", function(req, res) {
+            var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + "{{{name}}}".toLowerCase()
+                + "-schema.json"));
             res.render('form', {
                 title: '{{{name}}}',
+                model: '{{{name}}}',
                 menu: getMenu(),
+                isEditForm : false,
                 properties: function (){
-                    return Object.keys(new {{{name}}}()).map(key => {
-                        var proprow = {};
-
-                        proprow.name = key;
-                        
-                        return proprow;
-                    })
+                    var allProps = Object.getOwnPropertyNames(new {{{name}}}());
+                    var validProps = [];
+                    allProps.forEach(function (prop) {
+                        if (prop.includes('id'))
+                            return;
+                        var proprow = {
+                            name: prop,
+                            labelName: prop
+                        };
+                        validProps.push(proprow);
+                    });
+                    return validProps;
+                },
+                references: function () {
+                var allRefs = [];
+                if (model.references){
+                    model.references.forEach(function (ref) {
+                        allRefs.push({
+                            label: ref.label,
+                            is_mm_relation: (ref.relation === 'M-M'),
+                            model: ref.model
+                        });
+                    });
                 }
+                return allRefs;
+            },
+            get hasReferences() {
+                return this.references().length > 0;
+            }
             })
 });
 

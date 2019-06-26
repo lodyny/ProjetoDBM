@@ -49,12 +49,12 @@ function readConfigs() {
     return true;
 }
 
-function generate() {
+function generate(theme) {
     if (!readConfigs())
         return;
 
     deployGenerator.generateFolders();
-    moveStaticFiles();
+    moveStaticFiles(theme);
 
     classGenerator.generateClasses(schemas, dbname);
     dbGenerator.generateDatabase(schemas, dbname, true);
@@ -68,29 +68,25 @@ function generate() {
 var teste;
 function startPublish(){
     teste = nodemon({ script: './Publish/index.js' }).on('start', function(){
-        console.log('nodemon started');
+        console.log('Published server started...');
     }).on('crash', function () {
-        console.log('script crashed...');
+        console.log('Published server crashed...');
     });
-    console.log(teste);
 }
 
 app.post("/generate", function (req, res) {
-    console.log("Generating...");
-    generate();
-    console.log("Server deployment started...");
+    console.log("Starting Generating...");
+    generate(req.body.theme);
     res.redirect('/');
 });
 
 app.post("/start", function (req, res) {
-    console.log("Server Start...");
-    //runDeployedServer(deployedServer);
     startPublish();
     res.redirect('/');
 });
 
 app.post("/stop", function (req, res) {
-    console.log("Server Stop...");
+    console.log("Published Server Stopping...");
     nodemon.emit('quit');
     res.redirect('/');
 });
@@ -101,6 +97,12 @@ app.post("/getStats", function (req, res){
 
 app.get("/getStatus", function (req, res){
     res.send(isServerRunning());
+});
+
+app.get("/themes", function (req, res) {
+    var config = fs.readFileSync("./Server/config.json");
+    config = JSON.parse(config);
+    res.send(config.themes);
 });
 
 app.get("/models", function (req, res){
@@ -176,10 +178,13 @@ var server = app.listen(8000, function () {
     console.log("Server running at http://%s:%s", host, port);
 });
 
-function moveStaticFiles() {
+function moveStaticFiles(theme) {
     staticFiles.forEach(file => {
         deployGenerator.createPath(file.destinationPath);
         var data = fs.readFileSync(file.originalPath + file.fileName);
         fs.writeFileSync(file.destinationPath + file.fileName, data);
     });
+
+    var themeFile = fs.readFileSync('./Server/StaticFiles/' + theme);
+    fs.writeFileSync('./Publish/Public/Css/tema.css', themeFile);
 }

@@ -51,10 +51,6 @@
         "originalPath": "./Server/StaticFiles/",
         "destinationPath": "./Publish/Views/"
     }, {
-        "fileName": "tema1.css",
-        "originalPath": "./Server/StaticFiles/",
-        "destinationPath": "./Publish/Public/Css/"
-    }, {
         "fileName": "home.mustache",
         "originalPath": "./Server/StaticFiles/",
         "destinationPath": "./Publish/Views/"
@@ -67,5 +63,15 @@
         "property": "name",
         "order": "DESC",
         "limit": 3
+    }],
+    "themes": [{
+        "name": "Default Theme",
+        "css": "tema1.css"
+    },{
+        "name": "Dark Theme",
+        "css": "tema2.css"
+    },{
+        "name": "High Contrast Theme",
+        "css": "tema3.css"
     }]
 }

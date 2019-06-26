@@ -3,7 +3,7 @@
 ## Manual Técnico
 ----------
 ### Índice
-- [Desenvolvimento Baseado em Modelos - Shop Generator](#desenvolvimento-baseado-em-modelos---shop-generator)
+- [Desenvolvimento Baseado em Modelos - Cinema](#desenvolvimento-baseado-em-modelos---cinema)
   - [Manual Técnico](#manual-t%C3%A9cnico)
     - [Índice](#%C3%ADndice)
   - [Introdução](#introdu%C3%A7%C3%A3o)
@@ -174,14 +174,6 @@ De forma a resolver o problema apresentado foi criados os seguintes modelos para
 Foi criada uma aplicação *BackOffice* para facilitar a criação dos modelos e fazer as alterações necessárias à aplicação de forma a personalizar da melhor forma possível.
 <br>
 
-![](submit_model.png)
-<br>
-Este é o ecrã de criação de um modelo.
-
-![](generate_website.png)
-<br>
-Este é o ecrã de geração do *website*. Após a geração é possível iniciar o mesmo sendo apresentado o estado actual no topo direito do site.
-
 
 ### Transformação
 
@@ -277,7 +269,7 @@ Uma etiqueta em *Mustache* seguida de um "#" significa que o texto lá dentro te
 ### Criação de um novo servidor
 
 O primeiro passo na geração da nova aplicação será a criação da estrutura. Através das bibliotecas **mkdirp**, **fs** e **del**, é criada uma estrutura de pastas apresentada pela seguinte imagem:<br>
-![](publish.png)
+![](folders.png)
 <br>
 
 Para a criação do servidor da nova aplicação, é utilizado, também, templates *Mustache* para criar o seguinte ficheiro:
@@ -924,24 +916,16 @@ O template da página inicial em si seria configurada da seguinte forma:
 
 É de notar, também, que foi criada uma página geral que contém o *layout* geral da aplicação, onde depois é só preciso "injectar" o corpo, através de um objecto por sua vez renderizado por outro *template*. Segue parte do mesmo:
 ```HTML
-<body>
-    <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-  <a class="navbar-brand" href="/">{{{shop_title}}}</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="collapsibleNavbar">
-    <ul class="navbar-nav">
-     {{#items}}
-      <li class="nav-item">
-        <a class="nav-link" href="{{link}}">{{title}}</a>
-    {{/items}}   
-    </ul>
-  </div> 
-
-</nav>
-    {{{render_body}}}
-</body>
+<html>
+	<head>
+		<title>{{title}}</title>
+	</head>
+	<body>
+		{{{menu}}}
+		<br  />
+		{{{page}}}
+	</body>
+</html>
 ```
 
 ### Problemas relevantes encontrados
@@ -969,5 +953,5 @@ Para resolver problemas derivados de tabelas M-M e da confusão que, em termos d
 
 ## Limitações do Projecto
 
-A tecnologia utilizada para as transformações modelo-para-texto, o *Mustache* é um pouco limitativa em termos de operações que pode realizar no código e possui uma síntaxe muito pouco intuitiva. 
-Adicionalmente, encontravam-se ocasionalmente problemas com o sincronismo de eliminar o programa existente e recriar a estrutura de pastas, classes e base de dados, o que resultava em erros esporádicos de média gravidade.
+Devido à tecnologia utilizada para as transformações modelo-para-texto, o *Mustache* torna-se um pouco limitado devido a ser *logicless*, não permitindo assim a habitual utilização dos *statements* *if*, tornando o código por vezes complexo.
+Atualmente também existem problemas com o eliminar/criar a estrutura de pastas visto estas por vezes estarem ainda em *cache* e não conseguirem ser apagadas devido estarem abertas noutro lugar.

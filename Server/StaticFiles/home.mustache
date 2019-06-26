@@ -4,25 +4,95 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<link rel="stylesheet" href="../../../Css/tema.css">
+<script>
+    function getData() {
+        $.ajax({
+        type: 'GET',
+        url: './Schemas',
+        dataType: 'json',
+        success: function (data) {
+            var s = '';
+            for (var i = 0; i < data.length; i++) {  
+                s += '<option value="' + data[i].name + '">' + data[i].name + '</option>';  
+            }
+            $("#schema").html(s);  
+            getSchemaFields();
+        }
+        }); 
+    }
+
+    function getSchemaFields() {
+        $.ajax({
+        type: 'GET',
+        url: './Fields/' + $("#schema").val(),
+        dataType: 'json',
+        success: function (data) {
+          var s = '';
+            for  (var key in data){
+              s += '<option value="' + key + '">' + key + '</option>';  
+            }
+          $("#field").html(s);
+          fillTable();
+        }
+        }); 
+    }
+
+    function fillTable(){
+         $.ajax({
+        type: 'GET',
+        url: './Data/' + $("#schema").val() + '/' + $("#field").val() + '/' + $("#qtd").val() + '/' + $("#order").val(),
+        dataType: 'json',
+        success: function (data) {
+            var s = '';
+            for (var i = 0; i < data.length; i++) { 
+                s += '<div>' + data[i].name + '</div>'; 
+            }
+            $("#datadisplay").html(s);  
+        }
+        }); 
+    }
+</script>
 </head>
-<body>
+<body onload="getData();">
 {{{menu}}}
-<table>
-<tr>
-5/5
-{{#columns}}
-<th>{{name}}</th>
-{{/columns}}
-</tr>
-{{#rows}}
-<tr>
-{{#properties}}
-<td>
-{{value}}
-</td>
-{{/properties}}
-</tr>
-{{/rows}}
-</table>
+    <table class="container-fluid" style="text-align:center;width: 50%;">
+    <tr><td>
+        <div class="form-group">
+          <label for="schema">Schema:</label>
+          <select class="form-control" id="schema" onchange="getSchemaFields();">
+          </select>
+        </div></td>
+
+        <td><div class="form-group">
+          <label for="qtd">Quantity:</label>
+          <select class="form-control" id="qtd" onchange="fillTable();">
+            <option value='1'>1</option>
+            <option value='5'>5</option>
+            <option value='25'>25</option>
+            <option value='50'>50</option>
+            <option value='100'>100</option>
+          </select>
+        </div></td>
+        </tr><tr>
+        <td><div class="form-group">
+          <label for="order">Order:</label>
+          <select class="form-control" id="order" onchange="fillTable();">
+            <option value='ASC'>ASC</option>
+            <option value='DESC'>DESC</option>
+          </select>
+        </div></td>
+
+        <td><div class="form-group">
+          <label for="field">Field:</label>
+          <select class="form-control" id="field" onchange="fillTable();">
+
+          </select>
+        </div></td></tr>
+    </table>
+<div id="datadisplay" style="text-align:center;">
+
+</div>
 </body>
 </html>

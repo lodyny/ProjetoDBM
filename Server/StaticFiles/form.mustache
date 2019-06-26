@@ -2,9 +2,10 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<link rel="stylesheet" href="../../../Css/tema.css">
 <script>    
 function load1MValues(model, div_id, control_value){
-    console.log("1M");
     var xhr = new XMLHttpRequest();
     xhr.open("GET", `/../../api/${model}`, true);
     xhr.onreadystatechange = function () {
@@ -14,7 +15,6 @@ function load1MValues(model, div_id, control_value){
             control.name = model.toLowerCase() + "_id";
 
             var response = JSON.parse(this.responseText);
-            console.log(response);
 
             var defaultOption = document.createElement("option");
             defaultOption.textContent = `-- Select a ${model} --`;  
@@ -29,7 +29,6 @@ function load1MValues(model, div_id, control_value){
             })
 
             {{#isEditForm}}
-                console.log(control_value);
                 control.value = control_value;
             {{/isEditForm}}
             document.getElementById(div_id).appendChild(control);
@@ -39,13 +38,11 @@ function load1MValues(model, div_id, control_value){
 }
 
 function loadMMValues(model, div_id, value){
-    console.log("MM");
     var xhr = new XMLHttpRequest();
     xhr.open("GET", `/../../api/${model}`, true);
     xhr.onreadystatechange = function () {
         if(xhr.readyState === 4 && xhr.status === 200) {       
             var response = JSON.parse(this.responseText);
-            console.log(response);
 
             var div = document.getElementById(div_id);
 
@@ -80,7 +77,6 @@ function loadMMValues(model, div_id, value){
 }
 
 $(document).ready(function(){
-    $('input[rel="tooltip_rel"]').tooltip();
     {{#isEditForm}}
         {{#references}}
             {{#is_mm_relation}}
@@ -90,21 +86,6 @@ $(document).ready(function(){
                 load1MValues('{{{model}}}', 'reference_{{model}}',{{value}});
             {{/is_mm_relation}}
         {{/references}} 
-
-    $("#form").submit(function(e) {
-        $.ajax({
-            type: "PUT",
-            url: "/../../api/{{{model}}}/{{modelID}}",
-            cache: false,
-            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-            data: $("#form").serialize(),
-            success:function(){
-                window.location.href = "/backoffice/{{{model}}}";
-                
-            }
-        });
-        return false;
-    });
     {{/isEditForm}}
     {{^isEditForm}}
     {{#references}}
@@ -115,30 +96,49 @@ $(document).ready(function(){
             load1MValues('{{{model}}}', 'reference_{{model}}');
         {{/is_mm_relation}}
     {{/references}} 
-    
-    $("#form").submit(function(e) {
-        $.ajax({
-            type: "POST",
-            url: "/../../api/{{{model}}}",
-            cache: false,
-            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-            data: $("#form").serialize(),
-            success:function(){
-                window.location.href = "/backoffice/{{{model}}}";
-                
-            }
-        });
-
-        return false;
-    });
     {{/isEditForm}}
 });
 
+{{#isEditForm}}
+function submitData() {
+    editFormData();
+}
+{{/isEditForm}}
+{{^isEditForm}}
+function submitData() {
+    createFormData();
+}
+{{/isEditForm}}
+
+function createFormData() {
+        $.ajax({
+        type: 'POST',
+        url: '../../api/{{{model}}}',
+        data: $("#form").serialize(),
+        dataType: 'json',
+        success: function (data) {
+                window.location.href = "/backoffice/{{{model}}}";
+        }
+        }); 
+}
+
+function editFormData() {
+        $.ajax({
+        type: 'PUT',
+        url: '../../../api/{{{model}}}/{{modelID}}',
+        data: $("#form").serialize(),
+        dataType: 'json',
+        success: function (data) {
+                window.location.href = "/backoffice/{{{model}}}";
+        }
+        }); 
+}
+
+
 </script>
-  {{{menu}}}<br/>
+ {{{menu}}}<br/>
 <div class="container form-container rounded">
 <h2 style="width:100%;text-align:center"> {{{model}}} </h1>
-   <div style="margin-left:25%">
    <form id="form">
             {{#properties}}
                 <div class="form-group">
@@ -153,8 +153,8 @@ $(document).ready(function(){
             {{/references}}
 
             <div class="form-group">
-            <input class="form-control btn btn-success"  value="Submit" type="submit" />
+            <input class="form-control btn btn-success" value="Submit" onclick="submitData();" />
         </div>
        </form>
-    </div>
+
 </div>  

@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>manual_utilizador.md</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="desenvolvimento-baseado-em-modelos---cinema">Desenvolvimento Baseado em Modelos - Cinema</h1>
+<h2 id="manual-de-utilizador">Manual de Utilizador</h2>
+<hr>
+<h3 id="índice">Índice</h3>
+<ul>
+<li><a href="">Desenvolvimento Baseado em Modelos - Cinema</a></li>
+<li><a href="">Introdução</a></li>
+<li><a href="">Generator</a></li>
+<li><a href="">Website gerado</a></li>
+</ul>
+<h2 id="introdução">Introdução</h2>
+<p>Este manual contém a documentação necessária de apoio ao utilizador, através da criação de modelos, geração do website e dados necessários.<br><br>
+Para a elaboração do projeto foi utilizado:</p>
+<ul>
+<li><strong>Metamodelação</strong> utilizando <em>JSON Schema</em>, uma síntaxe específica de <em>JSON</em>;</li>
+<li><strong>Transformações</strong> modelo-para-texto utilizando a linguagem <em>Mustache</em>;</li>
+<li><strong>Base de dados</strong>: SQLite3;</li>
+<li><strong>Principais linguagens de programação</strong>: <em>JavaScript</em> e <em>NodeJS</em>.<br>
+<br><br>
+Após a criação dos modelos, estes são transformados em classes <em>JavaScript</em> que representam o modelo em si e as respectivas entidades na base de dados. Estes dados são manejáveis através de uma API RESTful de forma a introduzir, visualizar, editar e apagar qualquer tipo de dado.<br>
+<br></li>
+</ul>
+<p><strong>Modelo</strong>: Uma entidade do domínio do problema, com atributos específicos que necessitam de ser especificados. Por exemplo, é necessário definir um modelo que representará um produto na aplicação.<br>
+<br></p>
+<p>Neste caso especifico foi desenvolvido um <em>website</em> que disponobilidade informação sobre filmes, os seus respectivos trailers e covers.</p>
+<p>Esta documentação visa descrever como usar a plataforma de geração automática de código, através de imagens e explicações, bem como a descrever a utilização da aplicação gerada.</p>
+<h2 id="gerador">Gerador</h2>
+<p>No site principal (gerador) é possível visualizar o estado do <em>website</em> publicado no topo direito, sendo este actualizado constantemente…</p>
+<p><img src="generator_home.png" alt=""></p>
+<h3 id="consulta-de-modelos">Consulta de Modelos</h3>
+<p>Ao aceder à opção <em>Models</em> é apresentada a página da figura abaixo. Nesta podem ser consultados todos os modelos a serem embutidos na aplicação gerada bem como as suas propriedades e referências externas para outros modelos.</p>
+<p><img src="generator_models.png" alt=""></p>
+<h3 id="inserção-de-modelos">Inserção de Modelos</h3>
+<p>Ao aceder à opção <em>New Model</em> é possível ter acesso ao formulário de criação de um novo modelo para o site a ser gerado. É necessário inserir os campos do nome e descrição do modelo.<br>
+Para cada propriedade existe uma secção do formulário (<em>Property</em>) que permite adicionar propriedades ao modelo<br>
+Quando uma propriedade é adicionada a tabela das propriedades é actualizada e é possível remover esta propriedade através da opção <em>Remove</em>.</p>
+<p><img src="generator_newModel_props.png" alt=""></p>
+<p>Na secção <em>Reference</em> é disponobilizada uma forma eficaz de adicionar um modelo de referencia ao que se vai criar, tendo varios tipos de relações disponiveis.<br>
+Por fim basta clicar em <em>Create Model</em> de forma a criar o modelo configurado.</p>
+<p><img src="generator_newModel_refs.png" alt=""></p>
+<h3 id="generator">Generator</h3>
+<p>Nesta página é possível gerar então o <em>website</em> após a escolha do tema pretendido para a aplicação gerada.<br>
+Após a geração deste é possível iniciar/parar o servidor, sendo o estado reflectido no topo direito do site principal a qualquer momento.</p>
+<p><img src="generator_generate.png" alt=""></p>
+<p>Ao preencher o tema e clicar em <em>GENERATE WEBSITE</em> a geração irá iniciar e após alguns segundos o botão irá ser actualizado reflectindo que o processo já se encontra terminado.</p>
+<p><img src="generate_loading.png" alt=""></p>
+<h2 id="website-gerado">Website Gerado</h2>
+<h3 id="homepage">HomePage</h3>
+<p>É possível iniciar o servidor gerado através do botão no topo direito do gerador após este se encontrar com o estado ligado.<br>
+Na página principal é possível aceder ao menu superior de forma a navegar entre o <em>FrontOffice</em> e as opções do <em>BackOffice</em>.</p>
+<p><img src="generated_homepage.png" alt=""></p>
+<h4 id="listagem">Listagem</h4>
+<p><img src="generated_listagem.png" alt=""></p>
+<h4 id="detalhes">Detalhes</h4>
+<p><img src="generated_details.png" alt=""></p>
+<h4 id="inserção">Inserção</h4>
+<p><img src="generated_new.png" alt=""></p>
+<h4 id="edição">Edição</h4>
+<p><img src="generated_edit.png" alt=""></p>
+<h4 id="remoção">Remoção</h4>
+<p><img src="generated_remove.png" alt=""></p>
+<h4 id="frontoffice">FrontOffice</h4>
+<p>Nesta página é possível mudar os filtros que irão de imediato reflectir a informação apresentada por baixo.<br>
+<img src="generated_frontoffice.png" alt=""></p>
+</div>
+</body>
+
+</html>

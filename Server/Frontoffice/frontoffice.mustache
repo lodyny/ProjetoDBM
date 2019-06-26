@@ -7,36 +7,38 @@ var fs = require("fs");
 var {{{name}}} = require('../Models/{{{name}}}.js');
 {{/models}}
 
-router.get('/Home', function(req, res){
-    Movie.top("name", "DESC", 3, function (rows) {
-        console.log(rows);
-        
-        var template = fs.readFileSync("./Publish/Views/home.mustache").toString();
+router.get('/Schemas', function (req, res){
+    var config = fs.readFileSync("./Server/config.json");
+    config = JSON.parse(config);
+    res.send(config.schemas);
+});
 
-        var template_config = {
-            title: 'Frontoffice',
-            menu: getMenu(),
-            rows: rows.map(obj => {
-                return {
-                    properties: Object.keys(obj).map(key => {
-                        return {
-                            name: key,
-                            value: obj[key]
-                        }
-                    }),
-                    columns: Object.keys(new Movie()).map(key => {
-                        return {
-                            name: key
-                        };
-                    })
-                }
-            })
-        };
+router.get('/Fields/:schema', function (req, res) {
+    var model = JSON.parse(fs.readFileSync("./Models/Schemas/" + req.params.schema.toLowerCase()
+                + "-schema.json"));
 
-        var output = mustache.render(template, template_config);
-        res.send(output);
+    var props = model.properties;
+    res.send(props);
+});
 
+{{#models}}
+router.get('/Data/{{{name}}}/:field/:qtd/:order', function (req, res) {
+    {{{name}}}.top(req.params.field, req.params.order, req.params.qtd, function (rows) {
+        res.send(rows);
     });
+});
+{{/models}}
+
+
+router.get('/Home', function(req, res){    
+    var template = fs.readFileSync("./Publish/Views/home.mustache").toString();
+    var template_config = {   
+        title: 'Frontoffice',
+        menu: getMenu(),
+     };
+
+    var output = mustache.render(template, template_config);
+    res.send(output);
 });
 
 function getMenu (){

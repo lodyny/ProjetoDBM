@@ -1,0 +1,921 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>manual_tecnico.md</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+  <div class="stackedit__html"><h1 id="desenvolvimento-baseado-em-modelos---cinema">Desenvolvimento Baseado em Modelos - Cinema</h1>
+<h2 id="manual-técnico">Manual Técnico</h2>
+<hr>
+<h3 id="índice">Índice</h3>
+<ul>
+<li><a href="#desenvolvimento-baseado-em-modelos---cinema">Desenvolvimento Baseado em Modelos - Cinema</a>
+<ul>
+<li><a href="#manual-t%C3%A9cnico">Manual Técnico</a>
+<ul>
+<li><a href="#%C3%ADndice">Índice</a></li>
+</ul>
+</li>
+<li><a href="#introdu%C3%A7%C3%A3o">Introdução</a></li>
+<li><a href="#metamodela%C3%A7%C3%A3o">Metamodelação</a></li>
+<li><a href="#gera%C3%A7%C3%A3o-de-c%C3%B3digo">Geração de código</a>
+<ul>
+<li><a href="#backoffice-de-cria%C3%A7%C3%A3o-de-modelos">BackOffice de criação de modelos</a></li>
+<li><a href="#transforma%C3%A7%C3%A3o">Transformação</a></li>
+<li><a href="#cria%C3%A7%C3%A3o-de-um-novo-servidor">Criação de um novo servidor</a></li>
+<li><a href="#gera%C3%A7%C3%A3o-de-classes-e-base-de-dados">Geração de classes e base de dados</a></li>
+<li><a href="#api-restful">API RESTful</a></li>
+<li><a href="#renderiza%C3%A7%C3%A3o-de-p%C3%A1ginas-web">Renderização de páginas web</a></li>
+<li><a href="#problemas-relevantes-encontrados">Problemas relevantes encontrados</a></li>
+</ul>
+</li>
+<li><a href="#limita%C3%A7%C3%B5es-do-projecto">Limitações do Projecto</a></li>
+</ul>
+</li>
+</ul>
+<br>
+<h2 id="introdução">Introdução</h2>
+<p>Este manual tem como foco a documentação técnica da implementação de um programa no qual tem como objetivo a criação de um site de filmes, onde é possível pesquisar, ver detalhes, poster e até um trailer do mesmo.<br>
+Através da criação de modelos o site é construído à medida do utilizador.<br><br>
+De forma a atingir estes objetivos foi utilizado:</p>
+<ul>
+<li><strong>Metamodelação</strong> utilizando <em>JSON Schema</em>, uma síntaxe específica de <em>JSON</em>;</li>
+<li><strong>Transformações</strong> modelo-para-texto utilizando a linguagem <em>Mustache</em>;</li>
+<li><strong>Base de dados</strong>: SQLite3;</li>
+<li><strong>Principais linguagens de programação</strong>: <em>JavaScript</em> e <em>NodeJS</em>.</li>
+</ul>
+<br>
+Depois de serem criados modelos, são geradas classes *JavaScript* que representam entidades respectivas também geradas na base de dados. Sendo criado também uma API RESTful na qual é utilizada para operações CRUD.
+<br>
+<p><strong>Modelo</strong>: Uma entidade do domínio do problema, com atributos específicos que necessitam de ser especificados. Por exemplo, é necessário definir um modelo que representará um objeto na aplicação.<br>
+<br></p>
+<p>Através do tema dado foi desenvolvida uma aplicação que permite a gestão de vários filmes e respectivas informações.</p>
+<p><br><br></p>
+<h2 id="metamodelação">Metamodelação</h2>
+<p><strong>Metamodelação</strong>: Um modelo que cria modelos.<br>
+<br><br>
+Para a metamodelação do problema apresentado, foi utilizado <strong>JSON Schema</strong>, uma vertente de <em>JSON</em> que permite definir o nome, descrição, atributos de um modelo, que são chamadas de propriedades e relações com outros modelos, que se designam como referências.<br><br>
+O Exemplo de um modelo seguinte fornecido é a representação de um <strong>Movie</strong>:<br>
+<br></p>
+<pre class=" language-json"><code class="prism  language-json"><span class="token punctuation">{</span>
+
+<span class="token string">"title"</span><span class="token punctuation">:</span> <span class="token string">"Movie"</span><span class="token punctuation">,</span>
+
+<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"Movie description"</span><span class="token punctuation">,</span>
+
+<span class="token string">"type"</span><span class="token punctuation">:</span><span class="token string">"object"</span><span class="token punctuation">,</span>
+
+<span class="token string">"properties"</span><span class="token punctuation">:</span> <span class="token punctuation">{</span>
+
+<span class="token string">"name"</span><span class="token punctuation">:</span><span class="token punctuation">{</span>
+
+<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"movie name"</span><span class="token punctuation">,</span>
+
+<span class="token string">"type"</span><span class="token punctuation">:</span><span class="token string">"string"</span><span class="token punctuation">,</span>
+
+<span class="token string">"regex"</span><span class="token punctuation">:</span><span class="token string">"[a-zA-Z]+"</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+<span class="token string">"year"</span><span class="token punctuation">:</span><span class="token punctuation">{</span>
+
+<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"movie release date"</span><span class="token punctuation">,</span>
+
+<span class="token string">"type"</span><span class="token punctuation">:</span><span class="token string">"integer"</span><span class="token punctuation">,</span>
+
+<span class="token string">"regex"</span><span class="token punctuation">:</span><span class="token string">"\\d{4}"</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+<span class="token string">"cover"</span><span class="token punctuation">:</span><span class="token punctuation">{</span>
+
+<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"movie photo"</span><span class="token punctuation">,</span>
+
+<span class="token string">"type"</span><span class="token punctuation">:</span><span class="token string">"string"</span><span class="token punctuation">,</span>
+
+<span class="token string">"presentationMode"</span><span class="token punctuation">:</span><span class="token string">"image"</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+<span class="token string">"trailer"</span><span class="token punctuation">:</span><span class="token punctuation">{</span>
+
+<span class="token string">"description"</span><span class="token punctuation">:</span> <span class="token string">"movie trailer"</span><span class="token punctuation">,</span>
+
+<span class="token string">"type"</span><span class="token punctuation">:</span><span class="token string">"string"</span><span class="token punctuation">,</span>
+
+<span class="token string">"presentationMode"</span><span class="token punctuation">:</span><span class="token string">"video"</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+
+<span class="token string">"required"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"name"</span><span class="token punctuation">,</span><span class="token string">"year"</span><span class="token punctuation">,</span><span class="token string">"cover"</span><span class="token punctuation">,</span><span class="token string">"trailer"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+
+<span class="token string">"references"</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">{</span>
+
+<span class="token string">"model"</span><span class="token punctuation">:</span> <span class="token string">"Category"</span><span class="token punctuation">,</span>
+
+<span class="token string">"relation"</span><span class="token punctuation">:</span> <span class="token string">"1-M"</span><span class="token punctuation">,</span>
+
+<span class="token string">"label"</span><span class="token punctuation">:</span> <span class="token string">"LabelCategory"</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">,</span><span class="token punctuation">{</span>
+
+<span class="token string">"model"</span><span class="token punctuation">:</span> <span class="token string">"Director"</span><span class="token punctuation">,</span>
+
+<span class="token string">"relation"</span><span class="token punctuation">:</span> <span class="token string">"1-M"</span><span class="token punctuation">,</span>
+
+<span class="token string">"label"</span><span class="token punctuation">:</span> <span class="token string">"LabelDirector"</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">]</span>
+
+<span class="token punctuation">}</span>
+
+</code></pre>
+<br>
+No inicio é definido o nome, descrição e tipo do modelo, posteriormente seguem-se as propriedades onde cada uma contém os seguintes atributos:
+<br>
+<ul>
+<li><strong>type</strong> (obrigatório): Define o tipo de variável cujos valores da propriedade serão (ex.: String, Number, etc.);</li>
+<li><strong>description</strong>: Uma breve descrição do que a propriedade representa no domínio do problema;</li>
+<li><strong>unique</strong> (opcional): Se é um valor único;</li>
+<li><strong>regex</strong>: Define um padrão que o valor de uma propreidade terá que cumprir.</li>
+<li><strong>presentationMode</strong>: Define o tipo de objeto a ser apresentado sendo por default text mas podendo assumir outros valores como image ou video.<br>
+<br></li>
+</ul>
+<p>As propriedades que serão obrigatórias de introduzir na aplicação são definidas no campo <em>required</em> do modelo.<br>
+<br></p>
+<p>Nas referências, é possível determinar o <strong>nome</strong> do modelo a que este estará interligado, a tipo de <strong>relação</strong> dessa ligação, o nome da propriedade (<strong>label</strong>) a apresentar na aplicação e, opcionalmente, se esta é necessária ser introduzida na criação de um objecto do modelo principal.<br>
+<br></p>
+<p>Por exemplo:</p>
+<pre class=" language-json"><code class="prism  language-json"><span class="token punctuation">{</span>
+
+<span class="token string">"model"</span><span class="token punctuation">:</span> <span class="token string">"Category"</span><span class="token punctuation">,</span>
+
+<span class="token string">"relation"</span><span class="token punctuation">:</span> <span class="token string">"1-M"</span><span class="token punctuation">,</span>
+
+<span class="token string">"label"</span><span class="token punctuation">:</span> <span class="token string">"LabelCategory"</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Isto define que o modelo <em>Category</em> estará relacionado a um ou mais <em>Movie</em> e o campo a apresentar será o <strong>LabelCategory</strong> do <em>Category</em>.<br>
+<br></p>
+<p>De forma a resolver o problema apresentado foi criados os seguintes modelos para o domínio:</p>
+<ul>
+<li>Actor;</li>
+<li>Category;</li>
+<li>Director;</li>
+<li>Movie;</li>
+</ul>
+<br>
+<h2 id="geração-de-código">Geração de código</h2>
+<h3 id="backoffice-de-criação-de-modelos">BackOffice de criação de modelos</h3>
+<p>Foi criada uma aplicação <em>BackOffice</em> para facilitar a criação dos modelos e fazer as alterações necessárias à aplicação de forma a personalizar da melhor forma possível.<br>
+<br></p>
+<h3 id="transformação">Transformação</h3>
+<p><strong>Transformação</strong>: Conceito de converter, mantendo os seus valores, um modelo em outro, ou em texto (código). As transformações que serão referidas neste manual serão transformações modelo-para-texto, que, como já indicado, consistirão na conversão dos modelos criados em código <em>JavaScript</em>.<br>
+<br><br>
+Para realizar as transformações modelo-para-texto, foram utilizados templates <em>Mustache</em>, que permite combinar um objecto <em>JavaScript</em> com um ficheiro com etiquetas embutidas, onde serão escritos os valores do objecto. <br><br>
+Por exemplo, se considerarmos o seguinte ficheiro <em>template.mustache</em>:</p>
+<pre class=" language-html"><code class="prism  language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>{{{menu}}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<p>E o seguinte código <em>JavaScript</em>:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">var</span> params <span class="token operator">=</span> <span class="token punctuation">{</span>
+    menu<span class="token punctuation">:</span> <span class="token string">"&lt;p&gt;Menu da App&lt;/p&gt;"</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> template <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./template.mustache"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> output <span class="token operator">=</span> mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>template<span class="token punctuation">,</span> params<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>O <em>output</em> será:</p>
+<pre class=" language-html"><code class="prism  language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Menu da App<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<br>
+De seguida segue um exemplo mais concreto de um template *mustache*, o mustache apresentado a seguir é uma parte da página de listar de um modelo na aplicação:
+<pre class=" language-html"><code class="prism  language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+
+{{{menu}}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>br</span><span class="token punctuation">/&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>button</span>  <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span>  <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>btn btn-success<span class="token punctuation">"</span></span><span class="token style-attr language-css"><span class="token attr-name">  <span class="token attr-name">style</span></span><span class="token punctuation">="</span><span class="token attr-value"><span class="token property">margin-right</span><span class="token punctuation">:</span><span class="token number">10</span>px<span class="token punctuation">;</span></span><span class="token punctuation">"</span></span>  <span class="token attr-name">onclick</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>window.location  = <span class="token punctuation">'</span>./{{title}}/Insert<span class="token punctuation">'</span>;<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>button</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span>  <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>text<span class="token punctuation">"</span></span>  <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>inputSearch<span class="token punctuation">"</span></span>  <span class="token attr-name">onkeyup</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>search(this)<span class="token punctuation">"</span></span>  <span class="token attr-name">placeholder</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Search for...<span class="token punctuation">"</span></span><span class="token punctuation">/&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>table</span>  <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>table<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">&gt;</span></span>
+
+{{#columns}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>th</span><span class="token punctuation">&gt;</span></span>{{.}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>th</span><span class="token punctuation">&gt;</span></span>
+
+{{/columns}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">&gt;</span></span>
+
+{{#rows}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>tr</span><span class="token punctuation">&gt;</span></span>
+
+{{#properties}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">&gt;</span></span>
+
+{{value}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">&gt;</span></span>
+
+{{/properties}}
+
+{{#actions}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>td</span><span class="token punctuation">&gt;</span></span>
+
+&lt;a href="{{link}}"  title="{{tooltip}}"  {{#events}}{{name}}="javascript:{{function}}({{args}})"  {{/events}}&gt;
+
+{{#image}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{{src}}<span class="token punctuation">"</span></span>  <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>{{alt}}<span class="token punctuation">"</span></span>  <span class="token punctuation">/&gt;</span></span>
+
+{{/image}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>td</span><span class="token punctuation">&gt;</span></span>
+
+{{/actions}}
+
+  
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>tr</span><span class="token punctuation">&gt;</span></span>
+
+{{/rows}}
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>table</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<p>Uma etiqueta em <em>Mustache</em> seguida de um “#” significa que o texto lá dentro terá um de dois tipos de comportamentos: caso o objecto seja um <em>array</em>, o texto será iterado para cada elemento, caso seja uma variável de valor lógico, apenas uma vez. É de notar, também, que o símbolo que indica o <em>else</em> perante um valor lógico é o “^”.<br>
+<br></p>
+<h3 id="criação-de-um-novo-servidor">Criação de um novo servidor</h3>
+<p>O primeiro passo na geração da nova aplicação será a criação da estrutura. Através das bibliotecas <strong>mkdirp</strong>, <strong>fs</strong> e <strong>del</strong>, é criada uma estrutura de pastas apresentada pela seguinte imagem:<br><br>
+<img src="folders.png" alt=""><br>
+<br></p>
+<p>Para a criação do servidor da nova aplicação, é utilizado, também, templates <em>Mustache</em> para criar o seguinte ficheiro:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">var</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"express"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> mustache <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mustache'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> mustacheExpress <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'mustache-express'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> app <span class="token operator">=</span> <span class="token function">express</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> fs <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'fs'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> bodyParser <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"body-parser"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> api <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./Controllers/api.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> backOffice <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./Controllers/backoffice.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> frontOffice <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./Controllers/frontoffice.js'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+app<span class="token punctuation">.</span><span class="token function">engine</span><span class="token punctuation">(</span><span class="token string">'mustache'</span><span class="token punctuation">,</span> <span class="token function">mustacheExpress</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span><span class="token string">'view engine'</span><span class="token punctuation">,</span> <span class="token string">'mustache'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token keyword">set</span><span class="token punctuation">(</span><span class="token string">'views'</span><span class="token punctuation">,</span> __dirname <span class="token operator">+</span> <span class="token string">'/Views'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>bodyParser<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>bodyParser<span class="token punctuation">.</span><span class="token function">urlencoded</span><span class="token punctuation">(</span><span class="token punctuation">{</span>extended<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'/api'</span><span class="token punctuation">,</span> api<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'/backoffice'</span><span class="token punctuation">,</span> backOffice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token string">'/frontoffice'</span><span class="token punctuation">,</span> frontOffice<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+app<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+<span class="token keyword">var</span> template <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Publish/Views/template.mustache"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span> template_config <span class="token operator">=</span> <span class="token punctuation">{</span>
+
+title<span class="token punctuation">:</span> <span class="token string">'Backoffice'</span><span class="token punctuation">,</span>
+
+menu<span class="token punctuation">:</span> <span class="token function">getMenu</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span> output <span class="token operator">=</span> mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>template<span class="token punctuation">,</span> template_config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+res<span class="token punctuation">.</span><span class="token function">send</span><span class="token punctuation">(</span>output<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">function</span> <span class="token function">getMenu</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+<span class="token keyword">var</span> menu <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Publish/Views/menu.mustache"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+schemas <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span> config <span class="token operator">=</span> JSON<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Server/config.json"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+config<span class="token punctuation">.</span>schemas<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>model <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+schemas<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>model<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span> menu_config <span class="token operator">=</span> <span class="token punctuation">{</span>
+
+schemas<span class="token punctuation">:</span> schemas
+
+<span class="token punctuation">}</span>
+
+  
+
+<span class="token keyword">return</span> mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>menu<span class="token punctuation">,</span> menu_config<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+  
+
+app<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span>express<span class="token punctuation">.</span><span class="token keyword">static</span><span class="token punctuation">(</span>__dirname <span class="token operator">+</span> <span class="token string">'/Public'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span> server <span class="token operator">=</span> app<span class="token punctuation">.</span><span class="token function">listen</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">{</span>port<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">var</span> host <span class="token operator">=</span> server<span class="token punctuation">.</span><span class="token function">address</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>address <span class="token operator">===</span> <span class="token string">"::"</span> <span class="token operator">?</span> <span class="token string">"localhost"</span> <span class="token punctuation">:</span>
+
+server<span class="token punctuation">.</span><span class="token function">address</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>address
+
+<span class="token keyword">var</span> port <span class="token operator">=</span> server<span class="token punctuation">.</span><span class="token function">address</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>port
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"Published Server running on http://%s:%s"</span><span class="token punctuation">,</span> host<span class="token punctuation">,</span> port<span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Através da biblioteca <strong>nodemon</strong> é possível iniciar o novo servidor e este ser recarregado sem ter necessidade de mandar a aplicação abaixo.</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">function</span>  <span class="token function">startPublish</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+	server <span class="token operator">=</span>  <span class="token function">nodemon</span><span class="token punctuation">(</span><span class="token punctuation">{</span> script<span class="token punctuation">:</span>  <span class="token string">'./Publish/index.js'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'start'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+	console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'server started'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'crash'</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'server crashed...'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>server<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>No final são copiados para cada devida pasta os ficheiros estáticos necessários por parte da aplicação criada tal como ficheiros <em>CSS</em> ou <em>JS</em>. Só depois é que se passa para a geração de classes e tabelas na base de dados, baseadas nos modelos.<br>
+<br></p>
+<h3 id="geração-de-classes-e-base-de-dados">Geração de classes e base de dados</h3>
+<p><strong>Base de dados</strong>:<br><br>
+Primeiramente, é necessário criar a base de dados. É chamado o <em>database-generator</em>.</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">function</span>  <span class="token function">generateDatabase</span><span class="token punctuation">(</span>schemas<span class="token punctuation">,</span> db_name<span class="token punctuation">,</span> dummyData<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+db  <span class="token operator">=</span>  <span class="token keyword">new</span>  <span class="token class-name">sqlite3<span class="token punctuation">.</span>Database</span><span class="token punctuation">(</span><span class="token string">"./Publish/Database/"</span>  <span class="token operator">+</span>  db_name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+schemas<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>schema  <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+<span class="token function">createTable</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+schemas<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>schema  <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+<span class="token function">generateRelationships</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">2500</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">if</span><span class="token punctuation">(</span>dummyData<span class="token punctuation">)</span>
+
+<span class="token function">createDummyData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">3000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+db<span class="token punctuation">.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">4000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Este indica que, para cada modelo, será criada uma tabela, utilizando cada propriedade para construir uma coluna da tabela dependendo do <em>type</em>:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">function</span>  <span class="token function">createTable</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">var</span>  props  <span class="token operator">=</span>  schema<span class="token punctuation">.</span>properties<span class="token punctuation">;</span>
+
+<span class="token keyword">var</span>  keys  <span class="token operator">=</span>  Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>props<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span>  str_collumns_boy  <span class="token operator">=</span>  <span class="token string">""</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span>  query_template  <span class="token operator">=</span>  fs
+
+<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Models/Database/create-table.mustache"</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+keys<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>key  <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+str_collumns_boy  <span class="token operator">+=</span>  <span class="token function">createCollumn</span><span class="token punctuation">(</span>schema<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+str_collumns_boy  <span class="token operator">=</span>  str_collumns_boy<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span>  config  <span class="token operator">=</span> <span class="token punctuation">{</span>
+
+table_name<span class="token punctuation">:</span>  schema<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+
+primary_key<span class="token punctuation">:</span>  schema<span class="token punctuation">.</span>title<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>  <span class="token string">"_id"</span><span class="token punctuation">,</span>
+
+collumns_body<span class="token punctuation">:</span>  str_collumns_boy
+
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>query_template<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<pre class=" language-sql"><code class="prism  language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token keyword">IF</span> <span class="token operator">NOT</span> <span class="token keyword">EXISTS</span> {{table_name}} <span class="token punctuation">(</span>
+    {{primary_key}} <span class="token keyword">integer</span> <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> AUTOINCREMENT<span class="token punctuation">,</span>
+    {{{collumns_body}}}
+<span class="token punctuation">)</span>
+</code></pre>
+<p>E, de seguida, criadas as chaves estrangeiras necessárias, baseadas nas referências do modelo:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">function</span>  <span class="token function">generateRelationships</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">var</span>  references  <span class="token operator">=</span>  schema<span class="token punctuation">.</span>references<span class="token punctuation">;</span>
+
+<span class="token keyword">var</span>  config_json  <span class="token operator">=</span>  JSON<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Server/config.json"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span>  query_template<span class="token punctuation">;</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>references  <span class="token operator">!==</span>  <span class="token keyword">void</span>  <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+references<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>reference  <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">var</span>  config  <span class="token operator">=</span> <span class="token punctuation">{</span>
+
+child_table<span class="token punctuation">:</span>  schema<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+
+parent_table<span class="token punctuation">:</span>  reference<span class="token punctuation">.</span>model<span class="token punctuation">,</span>
+
+child_collumn<span class="token punctuation">:</span>  schema<span class="token punctuation">.</span>title<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+
+parent_collumn<span class="token punctuation">:</span>  reference<span class="token punctuation">.</span>model<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">switch</span> <span class="token punctuation">(</span>reference<span class="token punctuation">.</span>relation<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">case</span>  <span class="token string">"1-1"</span><span class="token punctuation">:</span>
+
+query_template  <span class="token operator">=</span>  fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Models/Database/fk_11.mustache"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>query_template<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+query_template  <span class="token operator">=</span>  fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Models/Database/fk_11_secondary.mustache"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>query_template<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+<span class="token keyword">case</span>  <span class="token string">"1-M"</span><span class="token punctuation">:</span>
+
+query_template  <span class="token operator">=</span>  fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Models/Database/fk_1M.mustache"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>query_template<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+<span class="token keyword">case</span>  <span class="token string">"M-M"</span><span class="token punctuation">:</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>
+
+mmrelations<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>
+
+config<span class="token punctuation">.</span>child_table  <span class="token operator">+</span>  <span class="token string">"_"</span>  <span class="token operator">+</span>  config<span class="token punctuation">.</span>parent_table
+
+<span class="token punctuation">)</span> <span class="token operator">==</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">&amp;&amp;</span>
+
+mmrelations<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>
+
+config<span class="token punctuation">.</span>parent_table  <span class="token operator">+</span>  <span class="token string">"_"</span>  <span class="token operator">+</span>  config<span class="token punctuation">.</span>child_table
+
+<span class="token punctuation">)</span> <span class="token operator">==</span>  <span class="token operator">-</span><span class="token number">1</span>
+
+<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>config_json<span class="token punctuation">.</span>databases  <span class="token operator">===</span>  <span class="token keyword">void</span>  <span class="token number">0</span><span class="token punctuation">)</span>
+
+config_json<span class="token punctuation">.</span>databases  <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">var</span>  exists  <span class="token operator">=</span>  <span class="token boolean">false</span><span class="token punctuation">;</span>
+
+  
+
+config_json<span class="token punctuation">.</span>databases<span class="token punctuation">.</span><span class="token function">some</span><span class="token punctuation">(</span>table  <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>table<span class="token punctuation">.</span>tableName<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span>  config<span class="token punctuation">.</span>child_table<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>  <span class="token string">"_"</span>  <span class="token operator">+</span>  config<span class="token punctuation">.</span>parent_table<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">||</span>
+
+table<span class="token punctuation">.</span>tableName<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span>  config<span class="token punctuation">.</span>parent_table<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span>  <span class="token string">"_"</span>  <span class="token operator">+</span>  config<span class="token punctuation">.</span>child_table<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+exists  <span class="token operator">=</span>  <span class="token boolean">true</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">return</span>  exists  <span class="token operator">==</span>  <span class="token boolean">true</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>exists<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+config_json<span class="token punctuation">.</span>databases<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+
+tableName<span class="token punctuation">:</span>  config<span class="token punctuation">.</span>child_table  <span class="token operator">+</span>  <span class="token string">"_"</span>  <span class="token operator">+</span>  config<span class="token punctuation">.</span>parent_table
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+fs<span class="token punctuation">.</span><span class="token function">writeFileSync</span><span class="token punctuation">(</span><span class="token string">"./Server/config.json"</span><span class="token punctuation">,</span> JSON<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>config_json<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+  
+
+query_template  <span class="token operator">=</span>  fs
+
+<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Models/Database/fk_MM.mustache"</span><span class="token punctuation">)</span>
+
+<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>mustache<span class="token punctuation">.</span><span class="token function">render</span><span class="token punctuation">(</span>query_template<span class="token punctuation">,</span> config<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+mmrelations<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>config<span class="token punctuation">.</span>child_table  <span class="token operator">+</span>  <span class="token string">"_"</span>  <span class="token operator">+</span>  config<span class="token punctuation">.</span>parent_table<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Quando a aplicação não possui dados também é executado a função <em>createDummyData</em> na qual irá popular a base de dados criada.</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">function</span>  <span class="token function">createDummyData</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"Generating dummy data..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO Actor (name, birthyear) VALUES ('TomasEdi', 1999),('KongoPongo',1980),('Olaf',2001)"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO Category (name) VALUES ('Horror'),('Comedy'),('Action'),('Drama'),('Fantasy')"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO Director (name, birthyear) VALUES ('Agustini', 1980),('Pirinpini', 1990),('Secolini', 2000)"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO Movie (name, year, cover, trailer, category_id, director_id) VALUES ('Titanic', 1994, 'https://img.moviepostershop.com/the-shawshank-redemption-movie-poster-1994-1020191906.jpg', 'https://www.imdb.com/videoembed/vi1317709849', 1, 1),('The lord of the Rings', 2000, 'https://img.moviepostershop.com/the-shawshank-redemption-movie-poster-1994-1020191906.jpg', 'https://www.imdb.com/videoembed/vi1317709849', 2, 2),('The Matrix', 1900, 'https://img.moviepostershop.com/the-shawshank-redemption-movie-poster-1994-1020191906.jpg', 'https://www.imdb.com/videoembed/vi1317709849', 3, 3),('The Godfather', 2002, 'https://img.moviepostershop.com/the-shawshank-redemption-movie-poster-1994-1020191906.jpg', 'https://www.imdb.com/videoembed/vi1317709849', 4, 1),('Star Wars: Episode IV', 1994, 'https://img.moviepostershop.com/the-shawshank-redemption-movie-poster-1994-1020191906.jpg', 'https://www.imdb.com/videoembed/vi1317709849', 5, 2)"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+db<span class="token punctuation">.</span><span class="token function">exec</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO Actor_Movie (actor_id,movie_id) VALUES (1,1),(1,2),(1,3),(3,3),(3,4)"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Exemplo de um ficheiro de alteração da base de dados, neste caso, de uma chave estrangeira M-M, onde é criada uma nova tabela para contemplar a referida relação:</p>
+<pre class=" language-sql"><code class="prism  language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> <span class="token keyword">IF</span> <span class="token operator">NOT</span> <span class="token keyword">EXISTS</span> {{{child_table}}}_{{{parent_table}}}<span class="token punctuation">(</span>
+    {{{child_collumn}}}_id <span class="token keyword">INTEGER</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    {{{parent_collumn}}}_id <span class="token keyword">INTEGER</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span>{{{child_collumn}}}_id <span class="token punctuation">,</span> {{{parent_collumn}}}_id<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">FOREIGN</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span>{{{child_collumn}}}_id<span class="token punctuation">)</span> <span class="token keyword">REFERENCES</span> {{{child_table}}}<span class="token punctuation">(</span>{{{child_collumn}}}_id<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword">FOREIGN</span> <span class="token keyword">KEY</span> <span class="token punctuation">(</span>{{{parent_collumn}}}_id<span class="token punctuation">)</span> <span class="token keyword">REFERENCES</span> {{{parent_table}}}<span class="token punctuation">(</span>{{{parent_collumn}}}_id<span class="token punctuation">)</span>
+<span class="token punctuation">)</span>
+</code></pre>
+<br>
+<p><strong>Geração de classes</strong>:<br><br>
+Na geração de classes são definidas as propriedades que cada uma irá ter e é construido passo a passo a composição de cada atributo. Também é feito o mapeamento destes atributos com as respectivas colunas da base de dados, além do constructor e respectivas referencias na classe.<br>
+<br><br>
+Foi abordado o problema da mesma forma que nos laboratórios, sendo apenas apresentado a realização das referências na classe:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token keyword">function</span>  <span class="token function">generateReferences</span><span class="token punctuation">(</span>schema<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">var</span>  references  <span class="token operator">=</span>  schema<span class="token punctuation">.</span>references<span class="token punctuation">;</span>
+
+<span class="token keyword">var</span>  str  <span class="token operator">=</span>  <span class="token string">""</span><span class="token punctuation">;</span>
+
+<span class="token keyword">var</span>  model  <span class="token operator">=</span>  <span class="token string">""</span><span class="token punctuation">;</span>
+
+<span class="token keyword">if</span> <span class="token punctuation">(</span>references  <span class="token operator">!==</span>  <span class="token keyword">void</span>  <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+references<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>reference  <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+
+model  <span class="token operator">=</span>  reference<span class="token punctuation">.</span>model<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">switch</span> <span class="token punctuation">(</span>reference<span class="token punctuation">.</span>relation<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+<span class="token keyword">case</span>  <span class="token string">"1-1"</span><span class="token punctuation">:</span>
+
+str  <span class="token operator">+=</span>
+
+<span class="token string">'\n\t\tObject.defineProperty(this, "'</span>  <span class="token operator">+</span>
+
+model  <span class="token operator">+</span>
+
+<span class="token string">'_id",{\n\t\t\t enumerable: false, writable: true \n\t\t});'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">case</span>  <span class="token string">"0-M"</span><span class="token punctuation">:</span>
+
+str  <span class="token operator">+=</span>
+
+<span class="token string">'\n\t\tObject.defineProperty(this, "'</span>  <span class="token operator">+</span>
+
+model  <span class="token operator">+</span>
+
+<span class="token string">'_id",{\n\t\t\t enumerable: false, writable: true \n\t\t });'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">case</span>  <span class="token string">"1-M"</span><span class="token punctuation">:</span>
+
+str  <span class="token operator">+=</span>
+
+<span class="token string">'\n\t\tObject.defineProperty(this, "'</span>  <span class="token operator">+</span>
+
+model  <span class="token operator">+</span>
+
+<span class="token string">'_id",{\n\t\t\t enumerable: false, writable: true \n\t\t });'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+  
+
+<span class="token keyword">case</span>  <span class="token string">"M-M"</span><span class="token punctuation">:</span>
+
+str  <span class="token operator">+=</span>
+
+<span class="token string">'\n\t\tObject.defineProperty(this, "'</span>  <span class="token operator">+</span>
+
+model  <span class="token operator">+</span>
+
+<span class="token string">'_ids",{\n\t\t\t enumerable: false, writable: true \n\t\t, value:[] });'</span><span class="token punctuation">;</span>
+
+<span class="token keyword">break</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token keyword">return</span>  str<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+</code></pre>
+<p>É de notar, nesta abordagem, que os valores de uma referência muitos-para-muitos, é feito através de um <em>array</em> desse valor.</p>
+<br>
+<h3 id="api-restful">API RESTful</h3>
+<p>A geração da API é bastante simples. Para cada modelo, é gerado uma função para cada um dos verbos RESTful (GET, POST, PUT e DELETE), que, por sua vez, chamam funções já criadas nas classes que fazem operações na base de dados.<br><br>
+Segue um exemplo dessas funções:<br>
+<br></p>
+<pre class=" language-javascript"><code class="prism  language-javascript">Brand<span class="token punctuation">.</span><span class="token function-variable function">all</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    database<span class="token punctuation">.</span><span class="token function">all</span><span class="token punctuation">(</span><span class="token string">"SELECT * FROM Brand"</span> <span class="token punctuation">,</span> Brand<span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>       
+
+Brand<span class="token punctuation">.</span><span class="token function-variable function">get</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span> callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    database<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">"SELECT * FROM Brand WHERE brand_id = ? "</span><span class="token punctuation">,</span><span class="token punctuation">[</span>id<span class="token punctuation">]</span> <span class="token punctuation">,</span>Brand<span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+Brand<span class="token punctuation">.</span><span class="token function-variable function">delete</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>id<span class="token punctuation">,</span> callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    database<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">"DELETE FROM Brand WHERE brand_id = ? "</span><span class="token punctuation">,</span><span class="token punctuation">[</span>id<span class="token punctuation">]</span> <span class="token punctuation">,</span>Brand<span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+Brand<span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function-variable function">save</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>id<span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token comment">//UPDATE</span>
+        database<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token string">"UPDATE Brand SET name = ? WHERE brand_id = ?"</span><span class="token punctuation">,</span> 
+        <span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>name
+            
+            <span class="token punctuation">,</span><span class="token keyword">this</span><span class="token punctuation">.</span>id
+        <span class="token punctuation">]</span>       
+        <span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span><span class="token comment">//INSERT      </span>
+        database<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span><span class="token string">"INSERT INTO Brand(name ) VALUES(?)"</span> <span class="token punctuation">,</span>
+         <span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>name
+            
+         <span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>      
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Para solucionar o problema de obter informação sobre a junção de duas tabelas, para relações M-M cria-se funções GET para cada um dos modelos da relação:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token punctuation">{</span><span class="token punctuation">{</span>#nmRelations<span class="token punctuation">}</span><span class="token punctuation">}</span>
+router<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">"/{{{modelA}}}/:model/:id"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token punctuation">{</span>modelA<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">.</span><span class="token function">many</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>params<span class="token punctuation">.</span>model<span class="token punctuation">,</span> req<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rows<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span>rows<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+router<span class="token punctuation">.</span><span class="token keyword">get</span><span class="token punctuation">(</span><span class="token string">"/{{{modelB}}}/:model/:id"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token punctuation">{</span>modelB<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">.</span><span class="token function">many</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>params<span class="token punctuation">.</span>model<span class="token punctuation">,</span> req<span class="token punctuation">.</span>params<span class="token punctuation">.</span>id<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rows<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        res<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span>rows<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token operator">/</span>nmRelations<span class="token punctuation">}</span><span class="token punctuation">}</span>
+</code></pre>
+<p>Exemplo da função <em>many</em> utilizada:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript">Sale<span class="token punctuation">.</span><span class="token function-variable function">many</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span>model<span class="token punctuation">,</span> id<span class="token punctuation">,</span> callback<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> nmTableName <span class="token operator">=</span> database<span class="token punctuation">.</span><span class="token function">getNMTableName</span><span class="token punctuation">(</span>Sale<span class="token punctuation">,</span> model<span class="token punctuation">.</span>constructor<span class="token punctuation">.</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    
+    database<span class="token punctuation">.</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`SELECT Sale.* FROM Sale INNER JOIN </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>nmTableName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> ON </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>nmTableName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.id =
+    Sale.id WHERE </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>nmTableName<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">.</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>model<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">_id = ?`</span></span><span class="token punctuation">,</span> <span class="token punctuation">[</span>id<span class="token punctuation">]</span><span class="token punctuation">,</span> Sale<span class="token punctuation">,</span> callback<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<br>
+Após isso, a única coisa que falta é apresentar páginas *web* ao utilizador.
+<br>
+<h3 id="renderização-de-páginas-web">Renderização de páginas web</h3>
+<p>De forma a ser mais eficiente e não criar de forma exponencial várias páginas <em>web</em> para cada modelo, todas as páginas da aplicação são criadas do lado do servidor e renderizadas no cliente através da função <strong>renderPage</strong>.<br>
+<br><br>
+Para cada modelo, no <em>BackOffice</em> eram criados os verbos necessários para renderizar cada página das CRUDs do mesmo. Para o <em>FrontOffice</em>, apenas se teve de definir a apresentação da página inicial. No template do mesmo, criou-se uma função genérica que apresentava um “top modelos” baseado num critério, também ele genérico e fornecido por parâmetros, como tal:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript"><span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token punctuation">{</span>frontoffice<span class="token punctuation">.</span>model<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">.</span><span class="token function">top</span><span class="token punctuation">(</span><span class="token string">"{{{frontoffice.property}}}"</span><span class="token punctuation">,</span><span class="token string">"{{{frontoffice.order}}}"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token punctuation">{</span>frontoffice<span class="token punctuation">.</span>limit<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>rows<span class="token punctuation">)</span><span class="token punctuation">{</span>
+
+            <span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token punctuation">{</span>frontoffice<span class="token punctuation">.</span>model<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">.</span><span class="token function">topWithMMCount</span><span class="token punctuation">(</span><span class="token string">"{{{frontoffice.MMModel}}}"</span><span class="token punctuation">,</span><span class="token string">"{{{frontoffice.order}}}"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">{</span><span class="token punctuation">{</span>frontoffice<span class="token punctuation">.</span>limit<span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>results<span class="token punctuation">)</span><span class="token punctuation">{</span>
+                console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>results<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>rows<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token function">renderPage</span><span class="token punctuation">(</span>req<span class="token punctuation">,</span> res <span class="token punctuation">,</span> <span class="token string">'welcome.mustache'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+                    welcome<span class="token punctuation">:</span> <span class="token string">'Welcome to '</span><span class="token operator">+</span> config<span class="token punctuation">.</span>website_name<span class="token punctuation">,</span>
+                    motto<span class="token punctuation">:</span> config<span class="token punctuation">.</span>homepage<span class="token punctuation">.</span>motto<span class="token punctuation">,</span>
+                    rows<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+                            topProductModel<span class="token punctuation">:</span> rows<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token operator">?</span> rows<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>obj <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+                                <span class="token keyword">return</span> <span class="token punctuation">{</span>
+                                    id<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>id<span class="token punctuation">,</span>
+                                    name<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+                                    price <span class="token punctuation">:</span> obj<span class="token punctuation">.</span>price<span class="token punctuation">,</span>
+                                    description<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>description<span class="token punctuation">,</span>
+                                    model<span class="token punctuation">:</span><span class="token string">"{{{frontoffice.model}}}"</span>
+                                <span class="token punctuation">}</span>
+                            <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+                            topSalesModel<span class="token punctuation">:</span> results<span class="token punctuation">.</span>length <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token operator">?</span> results<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>obj <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+                                <span class="token keyword">return</span> <span class="token punctuation">{</span>
+                                    id<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>id<span class="token punctuation">,</span>
+                                    name<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+                                    price <span class="token punctuation">:</span> obj<span class="token punctuation">.</span>price<span class="token punctuation">,</span>
+                                    description<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>description<span class="token punctuation">,</span>
+                                    count<span class="token punctuation">:</span> obj<span class="token punctuation">.</span>count<span class="token punctuation">,</span>
+                                    model<span class="token punctuation">:</span><span class="token string">"{{{frontoffice.model}}}"</span>
+                                <span class="token punctuation">}</span>
+                            <span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token boolean">false</span>
+                        <span class="token punctuation">}</span>
+                <span class="token punctuation">}</span><span class="token punctuation">)</span>
+            <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<br>
+<p>O template da página inicial em si seria configurada da seguinte forma:</p>
+<pre class=" language-html"><code class="prism  language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>container<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">&gt;</span></span> Top Sales <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">&gt;</span></span>
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>row<span class="token punctuation">"</span></span><span class="token style-attr language-css"><span class="token attr-name"> <span class="token attr-name">style</span></span><span class="token punctuation">="</span><span class="token attr-value"><span class="token property">margin-top</span><span class="token punctuation">:</span><span class="token number">2%</span><span class="token punctuation">;</span></span><span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+        {{#rows}}
+          {{#topSalesModel}}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>col-md-4<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>       
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">&gt;</span></span>{{name}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h3</span><span class="token punctuation">&gt;</span></span>{{price}}€<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h3</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>{{description}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Vendas: {{count}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>btn btn-secondary<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/backoffice/{{{model}}}/Detalhe/{{{id}}}<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>View details »<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+          {{/topSalesModel}}
+          {{^topSalesModel}}
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>col-md-4<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>       
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>No products to display here yet!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+          {{/topSalesModel}}
+        {{/rows}}
+      <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">&gt;</span></span>Top Products <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>row<span class="token punctuation">"</span></span><span class="token style-attr language-css"><span class="token attr-name"> <span class="token attr-name">style</span></span><span class="token punctuation">="</span><span class="token attr-value"><span class="token property">margin-top</span><span class="token punctuation">:</span><span class="token number">2%</span><span class="token punctuation">;</span></span><span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+          {{#rows}}
+            {{#topProductModel}}
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>col-md-4<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>       
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h2</span><span class="token punctuation">&gt;</span></span>{{name}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h2</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h3</span><span class="token punctuation">&gt;</span></span>{{price}}€<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h3</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>{{description}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>btn btn-secondary<span class="token punctuation">"</span></span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/backoffice/{{{model}}}/Detalhe/{{{id}}}<span class="token punctuation">"</span></span> <span class="token attr-name">role</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>button<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>View details »<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            {{/topProductModel}}
+            {{^topProductModel}}
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>col-md-4<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>       
+                <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>No products to display here yet!<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+              <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+            {{/topProductModel}}
+          {{/rows}}
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<br>
+<p>É de notar, também, que foi criada uma página geral que contém o <em>layout</em> geral da aplicação, onde depois é só preciso “injectar” o corpo, através de um objecto por sua vez renderizado por outro <em>template</em>. Segue parte do mesmo:</p>
+<pre class=" language-html"><code class="prism  language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">&gt;</span></span>{{title}}<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+		{{{menu}}}
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>br</span>  <span class="token punctuation">/&gt;</span></span>
+		{{{page}}}
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+<h3 id="problemas-relevantes-encontrados">Problemas relevantes encontrados</h3>
+<p>Para resolver problemas derivados de tabelas M-M e da confusão que, em termos de programação, podiam surgir visto que é aleatório qual a ordem dos nomes dos modelos associados que a tabela terá, foi criado um atributo no ficheiro de configuração denominado de <em>databases</em> que guarda o nome das tabelas M-M, após isso, foi criada a seguinte função no ficheiro de SQLite para se aceder a esta tabela de forma rápida:</p>
+<pre class=" language-javascript"><code class="prism  language-javascript">        getNMTableName<span class="token punctuation">:</span> <span class="token keyword">function</span> <span class="token function">getNMTableName</span><span class="token punctuation">(</span>model1<span class="token punctuation">,</span> model2<span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+          <span class="token keyword">var</span> tableName <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+        
+          <span class="token keyword">var</span> config_json <span class="token operator">=</span>  JSON<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span><span class="token string">"./Server/config.json"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+          config_json<span class="token punctuation">.</span>databases<span class="token punctuation">.</span><span class="token function">some</span><span class="token punctuation">(</span>table <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+            <span class="token keyword">var</span> models <span class="token operator">=</span> table<span class="token punctuation">.</span>tableName<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"_"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            
+            <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token punctuation">(</span>models<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> model1 <span class="token operator">&amp;&amp;</span> models<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">==</span> model2<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">(</span>models<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">==</span> model1 <span class="token operator">&amp;&amp;</span> models<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> model2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+              tableName <span class="token operator">=</span> table<span class="token punctuation">.</span>tableName<span class="token punctuation">;</span>
+        
+            <span class="token keyword">return</span> tableName <span class="token operator">!=</span> <span class="token string">""</span><span class="token punctuation">;</span>
+          <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+          <span class="token keyword">return</span> tableName<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+</code></pre>
+<h2 id="limitações-do-projecto">Limitações do Projecto</h2>
+<p>Devido à tecnologia utilizada para as transformações modelo-para-texto, o <em>Mustache</em> torna-se um pouco limitado devido a ser <em>logicless</em>, não permitindo assim a habitual utilização dos <em>statements</em> <em>if</em>, tornando o código por vezes complexo.<br>
+Atualmente também existem problemas com o eliminar/criar a estrutura de pastas visto estas por vezes estarem ainda em <em>cache</em> e não conseguirem ser apagadas devido estarem abertas noutro lugar.</p>
+</div>
+</body>
+
+</html>

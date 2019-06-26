@@ -130,8 +130,6 @@ function generate() {
   
         h5.textContent = model.description;
   
-        //console.log(model);
-  
         card_body.appendChild(h5);
   
         var required = model.required || [];
@@ -159,7 +157,6 @@ function generate() {
         var references = document.createElement("h5");
         references.textContent = "References";
         card_body.appendChild(references);
-        //console.log(model);
   
         var referencep = document.createElement("p");
         if (model.references.length == 0) {
